@@ -1,0 +1,235 @@
+// FEAST data model — faithfully translated from lib/db/src/schema/index.ts (Drizzle ORM).
+// Column names are preserved via @map / @@map directives so this schema targets the
+// existing live database without requiring any migrations.
+// DO NOT run `prisma migrate dev` against production — introspect only.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Users
+// ---------------------------------------------------------------------------
+model User {
+  id               Int      @id @default(autoincrement())
+  fullName         String   @map("full_name")
+  phone            String   @default("")
+  email            String   @unique
+  zipCode          String   @default("") @map("zip_code")
+  passwordHash     String   @map("password_hash")
+  /// Valid values: customer | restaurant_staff | driver | admin
+  /// Always set server-side; never accepted from client requests.
+  role             String   @default("customer")
+  membershipStatus String   @default("free") @map("membership_status")
+  referralCode     String?  @map("referral_code")
+  /// Stripe Customer id, created lazily on first payment. Never a card number.
+  stripeCustomerId String?  @map("stripe_customer_id")
+  savedAddresses   Json     @default("[]") @map("saved_addresses")
+  preferences      Json?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  orders             Order[]             @relation("UserOrders")
+  drivenOrders       Order[]             @relation("DriverOrders")
+  pushTokens         PushToken[]
+  feastWindowMembers FeastWindowMember[]
+  restaurantStaff    RestaurantStaff[]
+
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Restaurants
+// ---------------------------------------------------------------------------
+model Restaurant {
+  id            String   @id
+  name          String
+  cuisine       String
+  neighborhood  String
+  rating        Decimal  @default(0) @db.Decimal(3, 1)
+  numRatings    Int      @default(0) @map("num_ratings")
+  distance      String   @default("")
+  deliveryTime  String   @default("") @map("delivery_time")
+  pickupTime    String   @default("") @map("pickup_time")
+  isOpen        Boolean  @default(true) @map("is_open")
+  imageIndex    Int      @default(0) @map("image_index")
+  bgColor       String   @default("#000000") @map("bg_color")
+  lat           Decimal? @db.Decimal(9, 6)
+  lng           Decimal? @db.Decimal(9, 6)
+  allergyTags   Json     @default("[]") @map("allergy_tags")
+  dietaryTags   Json     @default("[]") @map("dietary_tags")
+  categories    Json     @default("[]")
+  /// Loose reference to an active feast window (no FK constraint in source schema).
+  feastWindowId String?  @map("feast_window_id")
+  memberDeal    String?  @map("member_deal")
+
+  menuItems    MenuItem[]
+  feastWindows FeastWindow[]
+  orders       Order[]
+  staff        RestaurantStaff[]
+
+  @@map("restaurants")
+}
+
+// ---------------------------------------------------------------------------
+// Menu Items
+// ---------------------------------------------------------------------------
+model MenuItem {
+  id           String  @id
+  restaurantId String  @map("restaurant_id")
+  category     String
+  name         String
+  description  String  @default("")
+  price        Decimal @db.Decimal(10, 2)
+  allergyTags  Json    @default("[]") @map("allergy_tags")
+  dietaryTags  Json    @default("[]") @map("dietary_tags")
+  imageIndex   Int     @default(0) @map("image_index")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@map("menu_items")
+}
+
+// ---------------------------------------------------------------------------
+// Feast Windows
+// ---------------------------------------------------------------------------
+model FeastWindow {
+  id            String  @id
+  restaurantId  String  @map("restaurant_id")
+  deliveryStart String  @map("delivery_start")
+  deliveryEnd   String  @map("delivery_end")
+  spotsTotal    Int     @map("spots_total")
+  spotsFilled   Int     @default(0) @map("spots_filled")
+  discount      Decimal @default(0) @db.Decimal(5, 2)
+  endTime       BigInt  @map("end_time")
+
+  restaurant Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  members    FeastWindowMember[]
+  orders     Order[]
+
+  @@map("feast_windows")
+}
+
+// ---------------------------------------------------------------------------
+// Feast Window Members (composite PK)
+// ---------------------------------------------------------------------------
+model FeastWindowMember {
+  feastWindowId String   @map("feast_window_id")
+  userId        Int      @map("user_id")
+  joinedAt      DateTime @default(now()) @map("joined_at") @db.Timestamptz(6)
+
+  feastWindow FeastWindow @relation(fields: [feastWindowId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([feastWindowId, userId])
+  @@map("feast_window_members")
+}
+
+// ---------------------------------------------------------------------------
+// Orders
+// ---------------------------------------------------------------------------
+model Order {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  restaurantId     String   @map("restaurant_id")
+  feastWindowId    String?  @map("feast_window_id")
+  deliveryType     String   @default("delivery") @map("delivery_type")
+  /// Delivery address text entered at checkout. Persisted for tracking / order history.
+  deliveryAddress  String?  @map("delivery_address")
+  deliveryLat      Decimal? @map("delivery_lat") @db.Decimal(9, 6)
+  deliveryLng      Decimal? @map("delivery_lng") @db.Decimal(9, 6)
+  /// Assigned courier. Nullable until driver dashboard exists.
+  driverId         Int?     @map("driver_id")
+  items            Json     @default("[]")
+  subtotal         Decimal  @db.Decimal(10, 2)
+  /// Server-computed total: subtotal + delivery fee + service fee − feast discount.
+  total            Decimal? @db.Decimal(10, 2)
+  /// Stripe PaymentIntent id. Unique — one successful PI backs exactly one order.
+  paymentIntentId  String?  @unique @map("payment_intent_id")
+  paymentStatus    String?  @map("payment_status")
+  cardBrand        String?  @map("card_brand")
+  cardLast4        String?  @map("card_last4")
+  /// Valid values: placed | confirmed | preparing | on_the_way | delivered | cancelled
+  status           String   @default("placed")
+  confirmedAt      DateTime? @map("confirmed_at") @db.Timestamptz(6)
+  preparingAt      DateTime? @map("preparing_at") @db.Timestamptz(6)
+  driverAssignedAt DateTime? @map("driver_assigned_at") @db.Timestamptz(6)
+  onTheWayAt       DateTime? @map("on_the_way_at") @db.Timestamptz(6)
+  deliveredAt      DateTime? @map("delivered_at") @db.Timestamptz(6)
+  cancelledAt      DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  /// When true, status was set manually by staff. Simulation must not override.
+  statusManual     Boolean  @default(false) @map("status_manual")
+  rating           Int?
+  ratingComment    String?  @map("rating_comment")
+  ratedAt          DateTime? @map("rated_at") @db.Timestamptz(6)
+  /// Highest status for which a push notification has been sent (dedup guard).
+  notifiedStatus   String?  @map("notified_status")
+  /// Last time the tracking screen polled. Suppresses push when app is open.
+  lastPolledAt     DateTime? @map("last_polled_at") @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  user        User         @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
+  restaurant  Restaurant   @relation(fields: [restaurantId], references: [id])
+  feastWindow FeastWindow? @relation(fields: [feastWindowId], references: [id])
+  driver      User?        @relation("DriverOrders", fields: [driverId], references: [id])
+  orderItems  OrderItem[]
+
+  @@map("orders")
+}
+
+// ---------------------------------------------------------------------------
+// Order Items (immutable snapshot at purchase time)
+// ---------------------------------------------------------------------------
+model OrderItem {
+  id                  Int     @id @default(autoincrement())
+  orderId             Int     @map("order_id")
+  menuItemId          String  @map("menu_item_id")
+  /// Frozen copy of menu item name at purchase time.
+  name                String
+  /// Frozen copy of menu item price at purchase time.
+  unitPrice           Decimal @map("unit_price") @db.Decimal(10, 2)
+  quantity            Int
+  specialInstructions String? @map("special_instructions")
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@map("order_items")
+}
+
+// ---------------------------------------------------------------------------
+// Push Tokens
+// ---------------------------------------------------------------------------
+model PushToken {
+  token     String   @id
+  userId    Int      @map("user_id")
+  /// expo | web | etc.
+  platform  String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("push_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Restaurant Staff (composite PK)
+// ---------------------------------------------------------------------------
+model RestaurantStaff {
+  userId       Int      @map("user_id")
+  restaurantId String   @map("restaurant_id")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@id([userId, restaurantId])
+  @@map("restaurant_staff")
+}
