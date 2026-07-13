@@ -1,0 +1,87 @@
+Remove the floating “Order in progress” card from the Home screen.
+
+Right now, after a customer places an order, the app shows an active order card floating above the bottom navigation on the Home screen. I do not want it there.
+
+Update the app so active orders are accessed through the Orders section instead.
+
+REQUIREMENTS:
+
+1. Remove the floating active order card from the Home screen.
+2. Do not show “Order in progress” above the bottom navigation.
+3. Do not overlay active order cards on top of the main carousel or home content.
+4. Keep the Home screen clean.
+
+Instead, add active order access in one or more of these places:
+
+OPTION A — Cart tab changes to Orders after checkout:
+After a customer places an order, the Cart tab can show a small badge or label indicating an active order.
+
+OPTION B — Add Orders inside More:
+In the More tab, show an “Orders” button where the customer can view:
+- Active orders
+- Past orders
+- Feast Window orders
+- Pickup orders
+- Grocery orders
+- Reserva bookings
+- Catering requests
+- Feast 360 tickets
+
+OPTION C — Add Orders page:
+Create an Orders page that shows:
+- Active Orders
+- Past Orders
+
+The Active Orders section should show:
+- Restaurant name
+- Current status
+- Estimated arrival
+- Button: Track Order
+
+When the customer taps Track Order:
+- Navigate to the Order Tracking page.
+
+ORDER TRACKING PAGE:
+
+Keep the tracking page working.
+
+The tracking page should show:
+- Title: Track Order
+- Restaurant name
+- Order number
+- Current status
+- Estimated arrival time
+- Progress tracker:
+  1. Order Received
+  2. Restaurant Accepted
+  3. Preparing Your Food
+  4. Driver Assigned
+  5. Picked Up
+  6. On The Way
+  7. Delivered
+- Items ordered
+- Total paid
+- Help button
+
+BOTTOM NAV:
+
+Keep bottom navigation:
+- Home
+- Search
+- Cart
+- Profile
+- More
+
+Do not add a floating order card above the bottom nav.
+
+If there is an active order, show a small badge on Cart or More only.
+
+FINAL FLOW:
+
+Customer places order
+→ Order confirmation page
+→ Customer can tap Track My Order from confirmation
+→ If customer goes back home, no floating order card appears
+→ Customer can find the active order from More → Orders or Profile → Order History
+→ Customer taps Track Order
+→ Tracking page opens

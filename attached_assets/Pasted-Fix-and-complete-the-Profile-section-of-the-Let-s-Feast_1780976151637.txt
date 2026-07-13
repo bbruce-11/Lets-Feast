@@ -1,0 +1,256 @@
+Fix and complete the Profile section of the Let’s Feast customer app.
+
+Right now the Profile page shows menu items, but they are not fully clickable or usable.
+
+Make every Profile menu item clickable and connected to a working page, modal, or screen.
+
+PROFILE PAGE REQUIREMENTS:
+
+The Profile page should show:
+
+- User name
+- Email
+- Phone number
+- Membership status
+- Feast Rewards points
+- Profile photo/avatar placeholder
+
+Then show clickable menu cards for:
+
+1. Payment Methods
+2. Food Preferences
+3. Order History
+4. Feast Rewards
+5. Settings
+6. Help & Support
+7. Log Out
+
+Each row should:
+- Be clickable
+- Have a hover/tap effect
+- Have a right arrow
+- Navigate to the correct page
+- Use modern mobile app styling
+
+IMPORTANT:
+Do not leave these as static list items.
+Each one must actually open a functional screen.
+
+PAYMENT METHODS PAGE:
+
+When the user clicks Payment Methods, open a Payment Methods page.
+
+Show:
+- Title: Payment Methods
+- Saved card placeholder
+- “Visa ending in 4242”
+- “Default payment method” badge
+- Button: Add Payment Method
+- Button: Back to Profile
+
+When user clicks Add Payment Method, show a mock form:
+- Cardholder name
+- Card number
+- Expiration date
+- CVV
+- Billing zip code
+- Save Payment Method button
+
+This is mock only. Do not process real payments.
+
+FOOD PREFERENCES PAGE:
+
+When user clicks Food Preferences, open a Food Preferences page.
+
+Show editable sections for:
+- Favorite cuisines
+- Foods I frequently order
+- Dietary restrictions
+- Allergies
+- Meal types
+- Price range
+- Rating preference
+
+Use selectable chips.
+
+Include:
+- Save Preferences button
+- Back to Profile button
+
+When the user saves, update mock customer profile state/local storage.
+
+ORDER HISTORY PAGE:
+
+When user clicks Order History, open an Order History page.
+
+Show:
+- Past food delivery orders
+- Pickup orders
+- Feast Window orders
+- Grocery orders
+- Reserva bookings
+- Catering requests
+- Feast 360 tickets
+
+Each order card should show:
+- Restaurant or service name
+- Date
+- Items or summary
+- Total
+- Status
+- Button: View Details
+- Button: Reorder, if food order
+
+If no orders exist, show:
+“No orders yet.”
+Button: Browse Restaurants
+
+ORDER DETAILS PAGE:
+
+When user clicks View Details, show:
+- Order number
+- Restaurant name
+- Items ordered
+- Quantity
+- Subtotal
+- Fees
+- Discount
+- Total
+- Delivery/pickup method
+- Status
+- Button: Reorder
+- Button: Back to Order History
+
+FEAST REWARDS PAGE:
+
+When user clicks Feast Rewards, open a rewards page.
+
+Show:
+- Current points: 240 pts
+- Membership tier: Feast Member
+- Progress bar to next reward
+- Available rewards:
+  - $3 off next Feast Window
+  - Free delivery after 500 pts
+  - One Drink member deal
+  - Feast 360 ticket discount
+
+Each reward should have:
+- Reward name
+- Points required
+- Redeem button
+
+For MVP, redeem button can show:
+“Reward saved to your account.”
+
+SETTINGS PAGE:
+
+When user clicks Settings, open a Settings page.
+
+Show toggles/options for:
+- Push notifications
+- Email updates
+- SMS updates
+- Location access
+- Dark mode placeholder
+- Language
+- Privacy settings
+- Delete account placeholder
+
+Include:
+- Save Settings button
+- Back to Profile button
+
+HELP & SUPPORT PAGE:
+
+When user clicks Help & Support, open a Help & Support page.
+
+Show:
+- Search help bar
+- Common help topics:
+  - Where is my order?
+  - I have a missing item
+  - I need a refund
+  - My Feast Window deal expired
+  - Contact restaurant
+  - Contact Feast support
+
+Create a mock support form:
+- Issue type dropdown
+- Message box
+- Submit Support Request button
+
+After submit, show:
+“Support request submitted. Our team will follow up soon.”
+
+LOG OUT:
+
+When user clicks Log Out:
+- Show confirmation modal:
+  “Are you sure you want to log out?”
+- Buttons:
+  - Cancel
+  - Log Out
+
+If user confirms:
+- Clear mock user session
+- Navigate back to opening/login screen
+
+NAVIGATION:
+
+Make sure these routes/screens work:
+
+/profile
+/profile/payment-methods
+/profile/food-preferences
+/profile/order-history
+/profile/order-history/:orderId
+/profile/rewards
+/profile/settings
+/profile/help-support
+
+If using state-based navigation instead of routes, create the same screens and make the menu rows switch to those screens.
+
+BOTTOM NAV:
+
+Keep bottom navigation fixed:
+- Home
+- Search
+- Cart
+- Profile
+- More
+
+When inside Profile subpages, keep bottom navigation visible, but also show a back button at the top.
+
+DESIGN:
+
+Make the Profile section modern and clean.
+
+Use:
+- White background
+- Rounded white cards
+- Soft gray page background
+- Deep red active states
+- Modern icons
+- Large readable text
+- Clean spacing
+
+Make sure the Profile tab active state looks clean.
+Remove any blue outline box around the Profile bottom nav button unless it is an accessibility focus state only.
+
+ACCESSIBILITY:
+
+Make all clickable rows actual buttons or links.
+They should be keyboard accessible.
+Add clear active/tap states.
+
+FINAL TEST:
+
+Test this flow:
+Profile → Payment Methods → Add Payment Method → Back
+Profile → Food Preferences → Edit chips → Save
+Profile → Order History → View Details → Reorder
+Profile → Feast Rewards → Redeem Reward
+Profile → Settings → Toggle options → Save
+Profile → Help & Support → Submit support request
+Profile → Log Out → Confirm → Return to login screen

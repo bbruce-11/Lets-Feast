@@ -1,0 +1,379 @@
+Build a mobile-first web app called Let’s Feast.
+
+Let’s Feast is a multi-channel food, delivery, restaurant discovery, nightlife, catering, grocery, and food experience platform.
+
+For this first MVP, focus only on the customer-facing app.
+
+Use a clean, premium, modern design with a light theme, red and gold accents, rounded cards, smooth spacing, and a food-tech feel. The app should feel simple and trustworthy like Amazon, but focused on local restaurants and food experiences.
+
+The app should include these customer-facing sections:
+1. Home
+2. Explore
+3. Delivery
+4. Restaurant Menu
+5. Cart
+6. Checkout
+7. Profile
+8. More
+
+Use mock data for restaurants, menu items, carts, Feast Windows, One Drink venues, Reserva restaurants, catering packages, grocery products, and Feast 360 events.
+
+Do not connect real payments yet. Use mock checkout.
+
+Create the following app flow:
+
+OPENING SCREEN:
+When the user opens the app, show:
+- Let’s Feast logo
+- Tagline: “Food. Experiences. Delivery. All in one place.”
+- Button: “I’m New Here”
+- Button: “Sign In”
+- Link: “Forgot Password?”
+
+SIGN UP:
+When the customer clicks “I’m New Here,” show a signup form with:
+- Full name
+- Phone number
+- Email
+- Password
+- Confirm password
+- Zip code or location
+- Optional referral code
+- Button: “Create My Feast Account”
+
+SIGN IN:
+Create a sign-in page with:
+- Email or phone number
+- Password
+- Forgot Password link
+- Continue with Google placeholder
+- Continue with Apple placeholder
+- Button: “Sign In”
+
+ONBOARDING:
+After signup, show onboarding questions so Feast can personalize the customer experience.
+
+Ask:
+1. What kind of food do you like?
+Options: Mexican, Puerto Rican, American, Italian, Chinese, Thai, Soul Food, Mediterranean, Burgers, Pizza, Seafood, Vegan, Desserts, Coffee, Breakfast
+
+2. Do you have any allergies?
+Options: Peanuts, Tree nuts, Dairy, Shellfish, Gluten, Soy, Eggs, Fish, Sesame, None
+
+3. Any dietary preferences?
+Options: Vegetarian, Vegan, Halal, Kosher, Gluten-free, Low-carb, High-protein, No pork, No beef, No preference
+
+4. How far do you want to explore?
+Options: Within 1 mile, Within 3 miles, Within 5 miles, Within 10 miles, Show me the whole city
+
+5. What are you usually looking for?
+Options: Fast delivery, Deals, Pickup, New restaurants, Healthy food, Family meals, Late-night food, Catering, Date night, Events
+
+Button: “Build My Feast Experience”
+
+HOME SCREEN:
+After onboarding, take the customer to the main home screen.
+
+At the top, show:
+- Let’s Feast logo
+- Customer location
+- Search bar with placeholder: “Search food, drinks, events, catering...”
+- Greeting: “What are you in the mood for today?”
+
+Create one main horizontal carousel with large cards for the main Feast tools:
+
+1. Explore
+Description: “Personalized restaurants based on your taste, allergies, location, and favorite cuisines.”
+Button: “Start Exploring”
+
+2. Delivery
+Description: “Order now, pickup, or join a Feast Window when restaurants open delivery deals.”
+Button: “Order Food”
+
+3. One Drink
+Description: “Find bars, restaurants, clubs, lounges, and member drink deals near you.”
+Button: “Find Deals Near Me”
+
+4. Reserva
+Description: “Book your table, choose your ride, and pre-order your meal before you arrive.”
+Button: “Reserve a Table”
+
+5. Feast Catering
+Description: “Large food orders for offices, events, meetings, parties, and groups.”
+Button: “Request Catering”
+
+6. Feast Grocery
+Description: “Essentials, local goods, snacks, drinks, and groceries delivered.”
+Button: “Shop Groceries”
+
+7. Feast 360
+Description: “Pop-up food experiences, live DJs, local restaurants, and cultural dining events.”
+Button: “View Events”
+
+Under the carousel, show sections:
+- Recommended For You
+- Feast Windows Open Now
+- Popular Near You
+- Pickup Nearby
+- Tonight on One Drink
+- Upcoming Feast 360 Events
+- Reorder Favorites
+
+BOTTOM NAVIGATION:
+Create bottom navigation with:
+- Home
+- Search
+- Cart
+- Profile
+- More
+
+MORE TAB:
+The More tab should include:
+- One Drink
+- Reserva
+- Feast Catering
+- Feast Grocery
+- Feast 360
+- Orders
+- Favorites
+- Membership
+- Rewards
+- Help & Support
+- Settings
+
+EXPLORE PAGE:
+When the customer clicks Explore, take them to an Explore page focused on personalized restaurant discovery.
+
+At the top, show:
+- Title: “Explore”
+- Subtitle: “Built around what you like.”
+- Search bar
+- Filter chips: Near Me, Allergy-Friendly, Open Now, Deals, Pickup, Feast Window, Vegan, Gluten-Free, Halal
+
+Show restaurant carousel sections:
+- Recommended For You
+- Allergy-Friendly Picks
+- Cuisines You Like
+- Within Your Radius
+- New Restaurants To Try
+- Deals You May Like
+
+Each Explore restaurant card should show:
+- Restaurant image
+- Restaurant name
+- Cuisine type
+- Rating
+- Distance
+- Delivery estimate
+- Pickup estimate
+- Allergy tags
+- Dietary tags
+- Feast Window badge if available
+- Member deal badge if available
+- Open or closed status
+- Button: “View Restaurant”
+
+DELIVERY PAGE:
+When the customer clicks Delivery, take them to a Delivery page focused on ordering food.
+
+At the top, show:
+- Title: “Delivery”
+- Subtitle: “Order now, pickup, or join a Feast Window and save.”
+- Search bar
+- Filter chips: Delivery, Pickup, Feast Window, Open Now, Fastest, Deals
+
+Show restaurant carousel sections:
+- Open Now
+- Feast Windows Open
+- Fastest Delivery
+- Pickup Available
+- Popular Near You
+- All Restaurants
+
+Each Delivery restaurant card should show:
+- Restaurant image
+- Restaurant name
+- Cuisine type
+- Rating
+- Distance
+- Delivery estimate
+- Pickup estimate
+- Current availability
+- Feast Window badge if active
+- Discount amount if active
+- Countdown timer if Feast Window is active
+- Button: “View Menu”
+
+FEAST WINDOW FEATURE:
+Add a customer-facing countdown timer for restaurant-controlled Feast Windows.
+
+Do not use the backend word “batching” on the customer side.
+
+When a restaurant has a Feast Window active, show:
+- “Feast Window Open”
+- Delivery window time, example: “Delivery between 12:30 PM – 1:00 PM”
+- Spots filled, example: “7 of 12 spots filled”
+- Countdown timer, example: “Order in 04:32 and save $3”
+- Button: “Join Window & Save”
+- Secondary option: “Continue with Regular Delivery”
+
+The countdown timer should appear:
+- On restaurant cards
+- On the restaurant menu page
+- In the cart
+- On checkout
+
+If the timer expires, show:
+“This Feast Deal expired. Choose the next Feast Window or continue with regular delivery.”
+
+RESTAURANT MENU PAGE:
+When the customer taps a restaurant, open a restaurant menu page.
+
+The restaurant menu page should include:
+- Restaurant cover image
+- Restaurant logo
+- Restaurant name
+- Cuisine type
+- Rating
+- Distance
+- Delivery time
+- Pickup time
+- Current status
+- Allergy and dietary tags
+
+If a Feast Window is active, show a highlighted banner:
+“Feast Window Open”
+“Delivery between 12:30 PM – 1:00 PM”
+“7 of 12 spots filled”
+“Order in 04:32 and save $3”
+Button: “Join Window & Save”
+Secondary button: “Continue with Regular Delivery”
+
+Menu categories:
+- Popular
+- Appetizers
+- Entrees
+- Combos
+- Family Meals
+- Drinks
+- Desserts
+- Specials
+
+Each menu item should show:
+- Image
+- Name
+- Description
+- Price
+- Allergy tags
+- Dietary tags
+- Add button
+
+CART:
+Create a cart page that shows:
+- Selected restaurant
+- Selected menu items
+- Quantity controls
+- Special instructions
+- Delivery or pickup selection
+- Feast Window discount if applied
+- Countdown timer if Feast Window is active
+- Subtotal
+- Delivery fee
+- Service fee
+- Discount
+- Total
+- Button: “Checkout”
+
+CHECKOUT:
+Create a mock checkout page with:
+- Delivery address
+- Pickup option
+- Order notes
+- Mock payment method
+- Feast Window timer if active
+- Order summary
+- Place Order button
+
+After placing order, show:
+- Order confirmation
+- Estimated delivery or pickup time
+- Order tracking status
+
+PROFILE:
+Create a profile page with:
+- Customer name
+- Phone number
+- Email
+- Saved addresses
+- Allergies
+- Dietary preferences
+- Favorite cuisines
+- Membership status
+- Payment methods placeholder
+- Order history
+- Settings
+
+SEARCH:
+Create a search page where customers can search:
+- Restaurants
+- Food items
+- Cuisine
+- Drinks
+- Events
+- Catering
+- Groceries
+
+MOCK DATA:
+Create mock data for at least:
+- 10 restaurants
+- 50 menu items
+- 5 active Feast Windows
+- 5 One Drink venues
+- 3 Reserva restaurants
+- 3 catering packages
+- 10 grocery products
+- 3 Feast 360 events
+
+Use Chicago neighborhood examples like:
+- Belmont Cragin
+- Logan Square
+- Humboldt Park
+- Wicker Park
+- Pilsen
+- West Loop
+- South Loop
+
+CUSTOMER LANGUAGE RULES:
+Use customer-friendly language.
+
+Use:
+- Feast Window
+- Join & Save
+- Limited spots
+- Order ahead and save
+- Pickup available
+- View Menu
+- Member Deal
+- Built around what you like
+
+Avoid:
+- Batching
+- Backend logistics
+- Capacity logic
+- Route optimization
+- Kitchen status details
+
+The final app should be demo-ready and allow a user to:
+1. Open the app
+2. Sign up
+3. Complete onboarding
+4. Land on the home screen
+5. Swipe through the main Feast carousel
+6. Tap Explore and see personalized restaurant carousels
+7. Tap Delivery and see all available restaurants
+8. View restaurants with Feast Window countdown deals
+9. Open a restaurant menu
+10. Add food to cart
+11. Join a Feast Window and save
+12. Checkout with mock payment
+13. See order confirmation and tracking

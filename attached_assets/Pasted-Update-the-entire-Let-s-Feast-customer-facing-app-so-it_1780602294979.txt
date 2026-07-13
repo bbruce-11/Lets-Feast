@@ -1,0 +1,288 @@
+Update the entire Let’s Feast customer-facing app so it looks more modern, premium, and investor-ready.
+
+The current design feels too dated. Redesign the app with a clean modern mobile app style.
+
+DESIGN GOAL:
+Make Let’s Feast feel like a premium food-tech platform, similar in quality to Uber Eats, DoorDash, Airbnb, Apple, and Amazon.
+
+BRAND STYLE:
+Use:
+- Clean white background
+- Deep Feast red as the primary brand color
+- Soft gold accents
+- Dark charcoal text
+- Light gray backgrounds for cards
+- Rounded corners
+- Soft shadows
+- Modern spacing
+- Large food photography
+- Simple clean icons
+- Smooth carousel cards
+- Sticky bottom navigation
+
+Avoid:
+- Dated fonts
+- Overly spaced-out letters
+- Heavy outlines everywhere
+- Too much text on one screen
+- Low-quality map images
+- Old-school buttons
+- Crowded screens
+
+TYPOGRAPHY:
+Use a modern sans-serif font style.
+Headlines should be bold, clean, and easy to read.
+Body text should be simple and readable.
+Do not use futuristic stretched-out fonts for normal app text.
+Do not use excessive letter spacing.
+
+COLORS:
+Use this style:
+- Primary red: #B11226 or #C9153E
+- Gold accent: #D6A84F
+- Charcoal text: #1F2933
+- Soft gray background: #F7F7F8
+- White cards: #FFFFFF
+- Muted gray text: #6B7280
+
+BUTTONS:
+Buttons should be modern pill buttons or rounded rectangle buttons.
+Primary buttons:
+- Red background
+- White text
+- Rounded corners
+- Bold readable text
+
+Secondary buttons:
+- White background
+- Red text
+- Thin red border
+
+SELECTED FILTER PILLS:
+Selected chips should be:
+- Red background
+- White text
+
+Unselected chips should be:
+- White or light gray background
+- Charcoal or red text
+- Light border
+
+BOTTOM NAVIGATION:
+Keep the bottom nav modern and clean:
+- Home
+- Search
+- Cart
+- Profile
+- More
+
+Bottom nav should:
+- Be fixed at the bottom
+- Have a white background
+- Have simple modern icons
+- Show the active tab in red
+- Show inactive tabs in gray
+- Have enough padding so content is not hidden behind it
+
+HOME SCREEN:
+Modernize the home screen.
+
+At the top:
+- Small Let’s Feast logo
+- Location selector
+- Profile/avatar icon
+- Search bar
+
+Main hero:
+- “What are you craving today?”
+- Subtext: “Order food, discover places, and unlock local experiences.”
+
+Main carousel cards:
+- Explore
+- Delivery
+- One Drink
+- Reserva
+- Catering
+- Grocery
+- Feast 360
+
+Make each card feel modern:
+- Large rounded card
+- Icon or image
+- Short title
+- One-line description
+- Button
+
+EXPLORE WELCOME SCREEN:
+Modernize the Explore welcome screen.
+
+Instead of a dated map image with heavy text, create:
+- Clean header: “Let’s Explore”
+- Subtitle: “Find restaurants, bars, and food spots built around your taste.”
+- Modern map-style card with clean pins
+- Short explanation card
+- Two modern buttons:
+  1. “Show me new places”
+  2. “I’m new, let’s explore”
+
+Keep the idea, but make it cleaner and less crowded.
+
+EXPLORE ONBOARDING:
+Modernize the question screens.
+
+Each screen should show:
+- Progress bar at top
+- Question title
+- Short helper text
+- Selectable chips
+- Back button
+- Next button
+
+Use clean spacing. Do not crowd the screen with too many options at once.
+
+If there are many options, make the screen scrollable and add bottom padding so the buttons are not hidden behind the bottom nav.
+
+QUESTION SCREEN DESIGN:
+Example:
+Title: “What kind of places do you like?”
+Helper text: “Pick as many as you want.”
+
+Then chips:
+- Casual
+- Trendy
+- Cozy
+- Local
+- Modern
+- Lively
+- Quiet
+- Outdoor
+- Family-friendly
+- Date night
+- Quick bite
+- Upscale
+
+Use modern chips, not old-style outlined buttons with spaced letters.
+
+EXPLORE RESULTS PAGE:
+Modernize the Explore results page.
+
+At the top:
+- Header: “Recommended for You”
+- Subtitle: “Based on your taste, location, and preferences.”
+
+Then show:
+- Search bar
+- Filter chips
+- Modern map preview card with restaurant pins
+- Ranked restaurant cards
+
+Restaurant cards should look modern:
+- Large food image
+- Restaurant name
+- Cuisine tags
+- Rating
+- Distance
+- Price range
+- Delivery/pickup time
+- Personalized reason
+- Button: “View Menu”
+
+Example:
+“El Barrio Taco Shop”
+Mexican • Tacos • 4.8★ • 1.2 mi • $$
+“Because you like tacos, casual spots, and quick bites.”
+Button: View Menu
+
+DELIVERY PAGE:
+Modernize Delivery.
+
+Delivery page should include:
+- Header: “Delivery”
+- Search bar
+- Filter chips: Open Now, Fastest, Pickup, Feast Window, Deals
+- Horizontal carousel: Feast Windows Open
+- Vertical restaurant list: All Restaurants
+
+Feast Window cards should be modern and urgent:
+- Red/gold badge: “Feast Window”
+- Countdown timer
+- Spots filled
+- Savings amount
+- Button: “Join & Save”
+
+Example:
+“Feast Window Open”
+“12:30 PM – 1:00 PM”
+“7 of 12 spots filled”
+“04:32 left • Save $3”
+Button: Join & Save
+
+CART PAGE:
+Make the cart page modern and functional.
+
+Requirements:
+- Cart items visible
+- Quantity controls
+- Special instructions
+- Delivery/Pickup toggle
+- Order summary
+- Sticky checkout bar above bottom nav
+- Large red Checkout button
+
+Make sure the Checkout button is always visible when cart has items.
+
+RESTAURANT MENU PAGE:
+Modernize the restaurant page.
+
+At the top:
+- Large cover image
+- Restaurant logo/avatar
+- Restaurant name
+- Cuisine
+- Rating
+- Delivery time
+- Pickup time
+- Price range
+- Tags
+
+If Feast Window is active:
+Show a modern highlighted banner:
+“Join this Feast Window & Save”
+“Order in 04:32 to save $3”
+“7 of 12 spots filled”
+Button: Join & Save
+
+Menu items:
+- Image
+- Name
+- Description
+- Price
+- Add button
+- Allergy/dietary tags
+
+OVERALL UX:
+Make the app feel smooth and simple.
+Reduce clutter.
+Use fewer words.
+Use strong visual hierarchy.
+Make buttons easy to tap.
+Make restaurant cards visually appealing.
+Make the app feel real, not like a wireframe.
+
+IMPORTANT:
+Keep all current app features, but redesign the UI to look modern.
+Do not remove:
+- Explore
+- Delivery
+- Feast Windows
+- Cart
+- Checkout
+- One Drink
+- Reserva
+- Catering
+- Grocery
+- Feast 360
+- Bottom nav
+
+Final test:
+The app should feel like a real modern mobile app that could be shown to investors, restaurants, and hackathon judges.

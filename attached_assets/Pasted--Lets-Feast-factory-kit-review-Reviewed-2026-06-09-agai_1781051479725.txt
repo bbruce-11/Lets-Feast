@@ -1,0 +1,101 @@
+# Lets-Feast — factory-kit review
+
+Reviewed 2026-06-09 against [nonlinear-xyz/factory-kit](https://github.com/nonlinear-xyz/factory-kit) (v0.3.0 skills + pitfalls index). Following the kit's convention: a banded verdict (pass / warn / fail), findings cited to the skill section they violate, severity-ordered. No score number — the instrument is heuristic.
+
+## Verdict: **fail** (absolute) / **healthy for an MVP demo** (context)
+
+Per the kit's gate, one critical ⇒ fail. There are two criticals — both authorization/integrity gaps, both fixable in under a day. The kit's own doctrine is to *gate the delta, contextualize the absolute*: as a demo you show customers next week, this codebase is in good shape. As the foundation for a real delivery network taking real orders, the criticals below must close before any real user touches it.
+
+**The bones are better than you described.** You said "mostly a frontend" — but there's already a working backend: Express 5 + Drizzle/Postgres with auth, orders, feast windows, push notifications, and WebSocket live tracking. Several parts are genuinely well-built (see "What's solid" below). The problems are concentrated in trust boundaries, not structure.
+
+---
+
+## Critical
+
+### C1 — Any authenticated user can change any order's status
+`artifacts/api-server/src/routes/orders.ts` — `PATCH /orders/:id/status` and `POST /orders/:id/advance` check `requireAuth` but no ownership and no role. The code comments acknowledge it ("no separate staff accounts yet, so any authenticated caller may act as staff/driver"). Any signed-up customer can mark anyone's order delivered, or replay statuses to trigger push notifications to other users.
+
+*Cites: `factory-auth.md §Auth from day one` — the wrapper interface is `requireAuth()` + `requireRole()`; the second one doesn't exist here.*
+
+**Fix:** add a `role` column to `users` (`customer` | `staff` | `driver`), a `requireRole("staff")` middleware, and gate both endpoints. ~2 hours. This is also the seed of the actor model the delivery network needs anyway.
+
+### C2 — Order pricing is trusted from the client
+`POST /orders` persists `items` and `subtotal` exactly as the client sends them. A modified client can order anything for $0.01. For a demo this is invisible; for a marketplace it's a revenue and trust bug, and it's the kind of thing technical diligence finds.
+
+*Cites: `factory-api.md §Validation` — validate at the boundary; the server owns money math.*
+
+**Fix:** look up `menu_items` prices by ID server-side, compute subtotal, reject or recompute on mismatch. The `menuItemsTable` already has everything needed.
+
+---
+
+## High
+
+### H1 — No request-body validation, despite Zod being everywhere
+Every route does `req.body as { ... }` type-casts. Zod, `drizzle-zod`, and generated `insert*Schema`s all exist in `lib/db` — and none are used at the API boundary. The casts are a fiction: `fullName` can be a 10MB string, `preferences` any JSON blob (persisted raw into jsonb).
+
+*Cites: `factory-api.md §Validation`; pitfalls index "no auth/validation at boundary" class.*
+
+**Fix:** a 10-line `validate(schema)` middleware; reuse the schemas you already generate.
+
+### H2 — The API contract pipeline is dead weight (spec covers 1 of ~16 endpoints)
+`lib/api-spec/openapi.yaml` documents only `/healthz`. The Orval codegen chain (`api-spec → api-client-react + api-zod`) is wired and building, but the Expo app ignores it and uses a hand-rolled `lib/api.ts` with ~duplicated interface definitions (`ApiUser`, `SavedAddress` re-declared by hand). Server types, spec types, and client types are three sources of truth, two of them empty or drifting.
+
+*Cites: `factory-pitfalls.md §Three competing solutions for the same problem` — "when you write a unifier, delete the inputs in the same PR."*
+
+**Fix (pick one, per the kit's "pick a side" doctrine):** either backfill `openapi.yaml` for all routes and consume the generated client in the app, or delete the codegen packages and promote `lib/api.ts` types to a shared package. For a solo-dev MVP the second is less work; the first pays off once a driver app / restaurant dashboard (second consumer) exists — which a delivery network guarantees. Recommend: keep the pipeline, backfill the spec as you build the next surface.
+
+### H3 — No rate limiting anywhere
+`/auth/signin` and `/auth/signup` are open to credential-stuffing and signup spam. Replit autoscale can run multiple instances, so when you add limiting, don't use an in-memory limiter — the kit calls this out explicitly.
+
+*Cites: `factory-security.md §Rate limiting` — "in-memory rate limiter on serverless" is a named pitfall.*
+
+**Fix:** Postgres- or Redis-backed limiter (e.g. `rate-limiter-flexible` with the pg store you already have) on auth routes minimum.
+
+### H4 — Unauthenticated WebSocket broadcasting to all clients
+`lib/ws.ts` upgrades any connection to `/api/ws` with no token check, and `broadcast()` fan-outs every message to every client. Today the payloads are low-sensitivity (feast-window counts, order id/status/progress). The moment real driver GPS coordinates ride this channel, every connected client receives every driver's location.
+
+**Fix now or at dispatch-build time:** verify the JWT on upgrade, and move to per-order/per-user channels before real tracking data exists.
+
+### H5 — No migrations, no CI
+`lib/db` has only `drizzle-kit push` (dev-mode schema sync) — no generated migration files, so no reviewable, reversible schema history. There's no `.github/` at all: the 4 existing test files run only when someone remembers.
+
+*Cites: `factory-data-layer.md §Migration file naming`, `factory-deployment.md §Migrations — CI, never runtime`, `factory-ci.md §Single ci.yml merge gate`, pitfalls "no tests under src/".*
+
+**Fix:** `drizzle-kit generate` + commit migrations before any real customer data exists; one `ci.yml` running `pnpm typecheck && vitest` as a required check.
+
+---
+
+## Medium
+
+- **M1 — No observability.** Pino logging is good, but no error tracking (Sentry) or product analytics (PostHog). *`factory-stack.md`: "PostHog + Sentry from day one. Easiest to start early, most expensive to backfill."* For investor conversations, usage analytics from day one is also your traction data.
+- **M2 — `replit.md` is an unfilled template.** Headings like "[Project name]" with placeholder text. *Pitfalls §Aspirational docs: AI agents read it and propose work against a fiction.* Fill it or delete it; add a `DECISIONS.md` recording picks already made (Express over Next.js, JWT over Better Auth, hand-rolled client over Orval — each was a decision, none is written down). *Pitfalls §No DECISIONS.md.*
+- **M3 — Presentation data in the DB schema.** `restaurants` stores `distance`, `deliveryTime`, `pickupTime` as display strings, plus `bgColor`/`imageIndex`. Distance/ETA are functions of the *user's* location, not restaurant attributes — they'll be computed once geo is real (you already store `lat`/`lng`). Fine for the demo; schedule the cleanup before seeding real restaurant data.
+- **M4 — JWT posture.** 30-day tokens, no revocation/refresh. The dev-secret fallback is handled correctly (throws in production) — good. Acceptable for MVP; revisit before payments.
+- **M5 — CORS wide open** (`cors()` with no origin list). Low risk for a token-auth mobile API, but set an allowlist when a web surface appears.
+- **M6 — Write amplification on polling.** `GET /orders/:id` writes `lastPolledAt` on every poll and `syncOrderStatus` can write on every list fetch. Fine now; a known hot spot at scale.
+
+---
+
+## What's solid (keep doing this)
+
+- **Feast-window join is concurrency-correct.** Transaction + conditional `UPDATE ... WHERE spotsFilled < spotsTotal AND endTime > now` with the insert in the same tx — no overselling under race, with a test covering the broadcast threshold. This is the hardest correctness problem in the codebase and it's handled properly.
+- **The order-status simulation has a clean replacement seam.** Status derives deterministically from `createdAt` (survives restarts, no timers), and `statusManual` gives staff overrides absolute precedence. When real dispatch arrives, you replace `deriveOrderStatus()` behind an existing interface instead of untangling timers. This is exactly the "solid bones" property you asked about.
+- **Ownership checks exist where they were thought about** — order reads and ratings 403 correctly (the gap in C1 is the staff endpoints, not the customer ones).
+- **Monorepo hygiene:** shared `@workspace/db` package, single schema source of truth, strict TS project references, pnpm `minimumReleaseAge` supply-chain guard (rare to see at this stage), env-var validation at boot, bcrypt, structured logs, parameterized queries via ORM throughout.
+
+---
+
+## What the delivery network will need (not defects today)
+
+1. **Actor model** — `users.role` (C1's fix starts this), then restaurant ownership (`restaurants.ownerId`) and a `drivers` table. The kit's multi-tenancy guidance (`factory-data-layer.md`) applies once restaurants self-serve.
+2. **Real dispatch** — driver assignment, location ingestion, per-order WS channels (H4).
+3. **Payments** — Stripe; C2's server-side pricing is the prerequisite.
+4. **Idempotent order creation** — an idempotency key on `POST /orders` so a double-tap doesn't double-charge.
+5. **Second API consumer** (restaurant dashboard / driver app) — the moment H2's OpenAPI investment pays for itself.
+
+## Suggested order of work
+
+1. C1 + C2 + H1 (one focused day: roles, server pricing, Zod at the boundary) — before any external user gets credentials.
+2. H5 (migrations + CI) — before real data exists; cheap now, painful later.
+3. H3 + M1 (rate limits, Sentry/PostHog) — before the demo link circulates.
+4. H2 + H4 — when you start the second surface (restaurant/driver), which is also the delivery-network kickoff.

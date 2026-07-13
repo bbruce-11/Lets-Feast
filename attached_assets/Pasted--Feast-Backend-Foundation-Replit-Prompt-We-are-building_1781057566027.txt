@@ -1,0 +1,55 @@
+# Feast Backend Foundation — Replit Prompt
+
+We are building the Feast backend foundation.
+
+The active product right now is the customer app, so the immediate priority is customer security and customer-facing functionality. However, the database must be designed so restaurant dashboards, driver dashboards, and admin dashboards can be added later without rebuilding the system. Do not hard-code the app as customer-only.
+
+## Stack
+
+Use Supabase Auth and Supabase Postgres.
+
+## Roles
+
+Every user gets a profile row with a `role` field: `customer`, `restaurant_staff`, `driver`, or `admin`.
+
+- The role field must NOT be editable by the user. It is set server-side only (default `customer` on signup, via a database trigger or server function). Never trust a role value sent from the client.
+- Build authorization around role-based access from the start, even though only the customer role is active in this phase.
+
+## Security (critical)
+
+- Enable Row Level Security (RLS) on every table. No table ships without policies.
+- Customers can only read and write their own rows (orders, order_items, addresses, favorites, carts, profiles).
+- Public read access only for restaurant, menu category, and menu item data.
+- Structure policies so restaurant_staff, driver, and admin policies can be added later without restructuring tables.
+- All prices and order totals must be calculated server-side from the database. Never trust prices, totals, or discounts sent from the client.
+- Never store card numbers. Use Stripe in test mode for checkout (payment intents created server-side).
+
+## Core tables
+
+- `profiles` (linked to auth.users, includes role)
+- `restaurants`
+- `restaurant_staff` (join table: user_id ↔ restaurant_id, supports multiple staff per restaurant)
+- `menu_categories`, `menu_items`
+- `orders`, `order_items` — order_items must snapshot item name and price at purchase time, since menus change
+- `addresses`
+- `favorites`
+
+## Order status lifecycle
+
+Define now, since restaurants and drivers depend on it later:
+
+`pending → accepted → preparing → ready → picked_up → delivered`, plus `cancelled`.
+
+Include fields on `orders` that future roles will need: restaurant_id, driver_id (nullable for now), status timestamps.
+
+## This phase: customer features (fully functional)
+
+Sign up, log in, browse restaurants, view menus, add items to cart, checkout securely, place orders, track order status, save addresses, favorite restaurants, view order history.
+
+## Later phases (do not build, but do not block)
+
+- Restaurant staff: manage settings, menus, order acceptance, busy mode, capacity windows, batching.
+- Drivers: assigned deliveries, pickup/delivery status, route updates.
+- Admins: manage restaurants, users, support, refunds, reports, platform controls.
+
+Only customer-facing features need to work in this phase, but the table structure and RLS policy design must accommodate these future dashboards without a rebuild.

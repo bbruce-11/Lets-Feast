@@ -1,0 +1,381 @@
+Update the Explore section of the Let’s Feast customer app based on this new Explore experience.
+
+Explore should feel like a personalized food discovery engine. It should ask the customer questions, learn their taste, then show a map-style restaurant recommendation page.
+
+IMPORTANT:
+Explore is not the same as Delivery.
+Explore is for discovery and personalization.
+Delivery is for ordering from available restaurants.
+
+Update Explore with this flow:
+
+1. Explore Welcome Screen
+2. Explore Preference Questions
+3. Explore Results Page with Map + Ranked Restaurant List
+
+EXPLORE WELCOME SCREEN:
+
+Create a welcome screen for Explore.
+
+At the top, show:
+- Let’s Explore logo/title
+- Tagline: “The first step to finding your new favorite foods, right up your alley.”
+
+Create a map-style hero image/card showing food location pins.
+
+Add a red information card that says:
+
+“Explore is a curated list of places in your area that we think you’ll love.
+
+To get started, we’ll ask you a few questions. The more you order, the better Feast gets at helping you find your new favorite restaurants, bars, and food spots in your own neighborhood.”
+
+Fix spelling and grammar:
+- “area” not “are”
+- “started” not “stared”
+- “your” not “youor”
+
+Add two buttons:
+1. “I’ve already started exploring, show me new places!”
+2. “I’m new, let’s explore!”
+
+Button behavior:
+- If user clicks “I’ve already started exploring,” skip onboarding and show Explore Results.
+- If user clicks “I’m new, let’s explore,” start the Explore preference questions.
+
+EXPLORE PROGRESS BAR:
+
+For the onboarding questions, show:
+- Let’s Explore logo/title at top
+- Progress bar under the logo
+- Large question headline
+- Multiple selectable pill buttons
+- Back button
+- Next button
+
+Selected pills should visually change:
+- Red background
+- White text
+- Red border or shadow
+
+Unselected pills should be:
+- White background
+- Red text
+- Thin gray border
+
+Allow multiple selections per question.
+
+QUESTION 1: PLACE VIBE
+
+Title:
+“I like bars & restaurants that are…”
+
+Options:
+- Experimental
+- Small
+- Classy
+- Elegant
+- Traditional
+- Casual
+- Cafe
+- Lively
+- Relaxed
+- Popular
+- Luxurious
+- Older
+- Quiet
+- Cozy
+- Simple
+- Formal
+- Health Conscious
+- Prestigious
+- Trendy
+- Friendly
+- Candlelit
+- Loud
+- Quirky
+- Local
+- Modern
+- Quick
+- Understated
+- Outdoor
+- Unique
+- New
+
+QUESTION 2: WORLDLY CUISINES
+
+Title:
+“Worldly cuisines that I like…”
+
+Options:
+- Mexican
+- Chinese
+- Indian
+- Mediterranean
+- Polish
+- Russian
+- Southern
+- Tex-Mex
+- Portuguese
+- Thai
+- Libyan
+- British
+- German
+- Middle Eastern
+- French
+- Cajun
+- Irish
+- Asian
+- Brazilian
+- Greek
+- Caribbean
+- Japanese
+- American
+- Italian
+- Hawaiian
+- Cuban
+- Soul
+- Korean
+- Spanish
+- Vietnamese
+- Peruvian
+- Salvadorian
+- Haitian
+
+Remove the option “Fast” from cuisine because fast is not a cuisine. Move “Fast” to ordering style or meal type.
+
+QUESTION 3: FOODS I FREQUENTLY ORDER
+
+Title:
+“I frequently find myself ordering…”
+
+Options:
+- Comfort Food
+- Pasta
+- Coffee
+- Seafood
+- Fish & Chips
+- Bread
+- Wings
+- Salad
+- Burgers
+- Tacos
+- Soup
+- Pickles
+- Dessert
+- Burritos
+- Sandwiches
+- Bar Food
+- Philly Cheesesteak
+- Family Meals
+- Anything Spicy
+- Sushi
+- Pudding
+- Smoothies
+- Hot Dogs
+- Donuts
+- Juice
+- Baked Goods
+- Ice Cream
+- Kabobs
+- BBQ
+- Charcuterie Board
+
+QUESTION 4: DIETARY RESTRICTIONS AND REQUESTS
+
+Title:
+“Dietary restrictions and requests”
+
+Options:
+- Dairy-Free
+- No Additives
+- Kosher
+- Shellfish Allergy
+- Farm-to-Table
+- Low Carb
+- Gluten-Free
+- Organic
+- Nut Allergy
+- Raw Diet
+- Non-GMO
+- High Protein
+- Low Calorie
+- Paleo
+- Keto
+- Soy Allergy
+- Nitrate-Free
+- Low FODMAP
+- Vegetarian
+- Vegan
+- No Saturated Fat
+- Heart Healthy
+- Low Sodium
+- Low Sugar
+- Low Fat
+- Halal
+- Pescatarian
+- Whole Grain
+
+QUESTION 5: MEAL TYPES, PRICE RANGE, AND RATINGS
+
+Create one final preferences screen with three sections.
+
+Section 1 title:
+“Meal Types”
+
+Options:
+- Breakfast
+- Happy Hour
+- Lunch
+- Quick Bite
+- Late Night
+- Bar Food
+- Multiple Courses
+- Drinks
+- Snack
+- Dinner
+- Brunch
+- Finger Food
+
+Section 2 title:
+“Price Range”
+
+Options:
+- $
+- $$
+- $$$
+- $$$$
+- $$$$$
+
+Section 3 title:
+“Ratings”
+
+Options:
+- 1 Star +
+- 2 Stars +
+- 3 Stars +
+- 4 Stars +
+- 5 Stars
+
+Final button:
+“Let’s Feast!”
+
+When the customer taps “Let’s Feast!”:
+- Save the selected Explore preferences in mock state/local storage.
+- Generate personalized restaurant recommendations.
+- Navigate to the Explore Results page.
+
+EXPLORE RESULTS PAGE:
+
+Create a results page that feels like a personalized recommendation list with a map.
+
+At the top:
+- Let’s Explore logo/title
+- Tagline: “The first step to finding your new favorite foods, right up your alley.”
+
+Show a map-style section with numbered pins:
+- Pin 1
+- Pin 2
+- Pin 3
+- Pin 4
+- Pin 5
+- Pin 6
+- Pin 7
+
+Below the map, show a ranked restaurant list.
+
+Each restaurant result card should include:
+- Rank number
+- Restaurant image
+- Restaurant name
+- Price range
+- Cuisine/category tags
+- Rating
+- Distance
+- Open/closed status
+- Closing time
+- Wait time
+- Pickup time
+- Delivery time
+- Personalized reason
+
+Example restaurant card:
+
+#1
+Drunken Fish $$
+Japanese, Asian | 4.6★ | 1.9 mi
+Open Now | Closes at 10:30 PM
+20 min wait
+17 min pickup
+72 min delivery
+
+“Based on your preferences, we think you’d like the Sunshine Roll.”
+
+Restaurant card button:
+“View Restaurant”
+
+When customer taps a restaurant:
+- Navigate to the restaurant profile/menu page.
+
+RECOMMENDATION LOGIC:
+
+Use mock logic to match restaurants based on:
+- Selected vibes
+- Selected cuisines
+- Selected foods
+- Dietary restrictions
+- Meal types
+- Price range
+- Rating preference
+- Distance
+
+Each mock restaurant should have matching tags so the app can explain why it recommended the restaurant.
+
+Example:
+If customer selects Japanese + Sushi + Trendy + $$$ + 4 stars, show a sushi/Japanese restaurant higher in the ranking.
+
+If customer selects Mexican + Tacos + Casual + $ + Quick Bite, show taco restaurants higher.
+
+If customer selects Vegan + Gluten-Free + Health Conscious, show healthy restaurants higher.
+
+DESIGN STYLE:
+
+Match the uploaded Explore concept:
+- White background
+- Deep red buttons
+- Gray/blue headline text
+- Thin outlined pill buttons
+- Rounded pill selections
+- Large bold futuristic-style headings
+- Progress bar under the Explore logo
+- Bottom navigation remains visible
+
+Keep bottom navigation:
+- Home
+- Search
+- Cart
+- Profile
+- More
+
+Make sure the Explore onboarding screens have enough bottom padding so the Back/Next buttons are not hidden behind the bottom navigation.
+
+IMPORTANT CUSTOMER LANGUAGE:
+
+Use:
+- Explore
+- Let’s Explore
+- Built around what you like
+- Right up your alley
+- Based on your preferences
+- New favorite places
+- Restaurants, bars, and food spots
+
+Avoid:
+- Algorithm
+- Backend
+- Data model
+- Batching
+- Logistics
+
+FINAL FLOW TO TEST:
+
+Home → Tap Explore → Explore Welcome Screen → Tap “I’m new, let’s explore!” → Answer preference screens → Tap “Let’s Feast!” → See Map + Ranked Restaurant List → Tap Restaurant → Restaurant Menu Page

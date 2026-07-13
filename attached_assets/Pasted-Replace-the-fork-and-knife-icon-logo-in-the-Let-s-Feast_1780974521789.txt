@@ -1,0 +1,100 @@
+Replace the fork-and-knife icon/logo in the Let’s Feast app with our actual Let’s Feast logo.
+
+IMPORTANT:
+Do not use the generic fork and knife icon anywhere as the main brand logo.
+
+Use the uploaded Let’s Feast horizontal logo instead:
+- Red/gold Feast icon
+- “LET’S FEAST” text
+
+Update the app header/logo areas.
+
+Replace the current header that shows:
+- fork and knife icon
+- cut-off “Let’...”
+
+With the real Let’s Feast logo.
+
+LOGO DISPLAY REQUIREMENTS:
+
+Use the uploaded Let’s Feast horizontal logo as the primary brand logo.
+
+Where to use it:
+- Splash/opening screen
+- Login screen
+- Signup screen
+- Home screen header
+- Explore welcome screen
+- Profile/header if needed
+- Any page where the app currently shows the fork-and-knife icon
+
+Header sizing:
+- On normal app pages, show a smaller horizontal logo at the top.
+- The logo should fit inside the header without being cut off.
+- Do not crop the text.
+- Do not stretch the image.
+- Use object-fit: contain.
+- Set max-width around 160px to 220px depending on screen size.
+- Set height auto.
+
+CSS example:
+
+.logo {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+}
+
+.header-logo {
+  max-width: 200px;
+  height: auto;
+  object-fit: contain;
+}
+
+If the logo is too wide for the top header, use only the Feast icon mark from the logo or create a smaller version, but do not use the fork-and-knife icon.
+
+APP HEADER FIX:
+
+The current header is cutting off the text and showing “Let’...”
+
+Fix the header so it shows either:
+1. Full Let’s Feast logo image, or
+2. Feast icon mark with “Let’s Feast” text next to it
+
+Do not let the logo overflow or get hidden.
+
+HEADER LAYOUT:
+
+Use this layout:
+
+Left side:
+- Let’s Feast logo
+
+Right side:
+- Location selector or profile icon if needed
+
+Make sure the logo is fully visible on mobile.
+
+REMOVE OLD ICON:
+
+Search the code for any usage of:
+- fork knife icon
+- utensils icon
+- generic food icon as logo
+- Lucide Utensils
+- FontAwesome utensils
+- any placeholder app logo
+
+Replace those with the actual Let’s Feast logo image.
+
+FINAL TEST:
+
+Check these pages:
+- Opening screen
+- Login screen
+- Home screen
+- Explore screen
+- Delivery screen
+- Profile screen
+
+The app should show the real Let’s Feast brand logo, not the fork and knife icon.

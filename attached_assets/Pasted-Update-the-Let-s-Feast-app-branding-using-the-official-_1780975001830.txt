@@ -1,0 +1,213 @@
+Update the Let’s Feast app branding using the official branding guide.
+
+Use these official Feast brand colors:
+
+Primary Feast Red:
+#89181A
+RGB: 137, 24, 26
+
+Secondary Feast Gold:
+#A57D2D
+RGB: 165, 125, 45
+
+Use these colors throughout the app instead of the previous generic red and gold.
+
+COLOR SYSTEM:
+
+Create CSS variables or theme tokens:
+
+:root {
+  --feast-red: #89181A;
+  --feast-gold: #A57D2D;
+  --feast-charcoal: #1F2933;
+  --feast-gray: #6B7280;
+  --feast-light-gray: #F7F7F8;
+  --feast-white: #FFFFFF;
+  --feast-border: #E5E7EB;
+}
+
+Use Feast Red for:
+- Primary buttons
+- Active bottom navigation icons
+- Selected chips
+- Important badges
+- Checkout button
+- Track Order button
+- Feast Window urgency text
+- Main CTA buttons
+
+Use Feast Gold for:
+- Accent badges
+- Feast Window border/accent
+- Rewards highlights
+- Premium/member badges
+- Small decorative accents
+- Progress bars where appropriate
+
+Use charcoal for:
+- Main text
+- Headers
+- Restaurant names
+- Profile menu text
+
+Use gray for:
+- Secondary text
+- Subtitles
+- Metadata
+- Inactive nav items
+
+LOGO:
+
+Replace the fork-and-knife icon with the official Let’s Feast logo from the uploaded branding assets.
+
+Use the official logo in:
+- Splash screen
+- Login screen
+- Signup screen
+- Home header
+- Explore header
+- Delivery header
+- Profile page if needed
+
+Do not crop the logo.
+Do not stretch the logo.
+Use object-fit: contain.
+
+Header logo CSS:
+.logo {
+  width: 180px;
+  max-width: 70%;
+  height: auto;
+  object-fit: contain;
+}
+
+APP DESIGN UPDATE:
+
+Make the app feel modern while staying true to the Feast brand.
+
+Use:
+- White background
+- Feast Red buttons
+- Feast Gold accents
+- Soft gray cards
+- Rounded corners
+- Clean shadows
+- Modern sans-serif typography
+- High-quality food images
+- Simple clean icons
+
+Avoid:
+- Generic red colors
+- Generic fork-and-knife logo
+- Dated typography
+- Excessive letter spacing on regular app text
+- Crowded screens
+- Heavy outlines everywhere
+
+TYPOGRAPHY:
+
+The branding guide mentions Mortend and Neusa Next Standard.
+
+If those fonts are not available in the app, use a modern fallback:
+- Headings: Montserrat, Poppins, or Inter
+- Body: Inter, system-ui, sans-serif
+
+Use the Feast-style tracking/letter spacing only for special brand moments, like:
+- Splash screen
+- Logo lockup
+- Large Explore title
+- Premium marketing cards
+
+Do not use heavy letter spacing for:
+- Buttons
+- Restaurant cards
+- Menus
+- Cart
+- Checkout
+- Profile pages
+
+BUTTON STYLE:
+
+Primary button:
+- Background: #89181A
+- Text: white
+- Border radius: 16px or pill shape
+- Font weight: 700
+
+Secondary button:
+- Background: white
+- Text: #89181A
+- Border: 1px solid #89181A
+
+Gold accent button or badge:
+- Background: rgba(165, 125, 45, 0.12)
+- Text: #A57D2D
+- Border: 1px solid #A57D2D
+
+FEAST WINDOW CARD:
+
+Use Feast Gold and Feast Red together.
+
+Example:
+- Border: #A57D2D
+- Badge: Feast Window
+- Timer text: #89181A
+- Savings badge: #A57D2D
+- Button: #89181A
+
+BOTTOM NAVIGATION:
+
+Active tab:
+- Icon color: #89181A
+- Text color: #89181A
+
+Inactive tab:
+- Icon color: #6B7280
+- Text color: #6B7280
+
+Remove any blue focus outline unless it only appears during keyboard accessibility focus.
+
+PROFILE PAGE:
+
+Use the brand colors:
+- Active icons: #89181A
+- Rewards icon/accent: #A57D2D
+- Log Out text: #89181A
+- Cards: white with soft shadow
+- Background: #F7F7F8
+
+EXPLORE PAGE:
+
+Use official colors:
+- Progress bar fill: #89181A
+- Progress bar accent/shadow: #A57D2D
+- Selected chips: #89181A with white text
+- Unselected chips: white with #89181A text and light border
+- CTA buttons: #89181A
+- Accent pins/badges: #A57D2D
+
+DELIVERY PAGE:
+
+Use official colors:
+- Feast Window badges: gold accent
+- Countdown timers: Feast Red
+- Join & Save buttons: Feast Red
+- Discount badges: Feast Gold
+
+CART AND CHECKOUT:
+
+Use:
+- Checkout button: #89181A
+- Discount/savings: #A57D2D
+- Error/expired timer: #89181A
+- Order summary cards: white
+- Page background: #F7F7F8
+
+FINAL REQUIREMENT:
+
+Update the entire app so the brand feels consistent with the official Let’s Feast identity.
+
+The app should no longer look generic.
+It should use the official Feast Red #89181A and Feast Gold #A57D2D everywhere.
+It should use the official logo instead of generic icons.
+It should feel modern, premium, clean, and investor-ready.
