@@ -7,6 +7,17 @@ import { AppModule } from './app.module';
   return Number(this);
 };
 
+// SECURITY: comma-separated allowlist, e.g. "https://admin.letsfeast.co,https://restaurant.letsfeast.co".
+// Required in production; falls back to common local dev ports otherwise.
+function resolveCorsOrigins(): string[] {
+  const raw = process.env['CORS_ORIGINS'];
+  if (raw) return raw.split(',').map((o) => o.trim()).filter(Boolean);
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error('CORS_ORIGINS environment variable is required in production');
+  }
+  return ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -14,7 +25,7 @@ async function bootstrap() {
   // (matching the legacy Express server) rather than Socket.io.
   app.useWebSocketAdapter(new WsAdapter(app));
 
-  app.enableCors();
+  app.enableCors({ origin: resolveCorsOrigins(), credentials: true });
   // All feature routes live under /api/* to match the Express server's convention.
   app.setGlobalPrefix('api');
 

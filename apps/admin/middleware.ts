@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// SECURITY NOTE: this middleware only base64-decodes the JWT payload — it does
+// NOT verify the signature. That's acceptable here because it's UI routing
+// only (which page shell to render); every actual data fetch goes through the
+// NestJS API's JwtAuthGuard, which does verify the signature, plus RolesGuard,
+// which re-checks the role from the DB. Do not treat this file as a security
+// boundary, and do not add any data access here without going through the API.
+
 const COOKIE_NAME = 'feast_admin_token';
 
 function getJwtRole(token: string): string | null {

@@ -10,7 +10,19 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { JwtPayload } from '../common/decorators/current-user.decorator';
 import type { User } from '@prisma/client';
 
-const STAFF_PASSCODE = process.env['STAFF_PASSCODE'] ?? 'feast-staff';
+// SECURITY: this passcode grants `restaurant_staff` role platform-wide (see
+// RolesGuard's userId===0 branch, which trusts it without a DB lookup). It must
+// never fall back to a guessable default in production. Mirrors the JWT_SECRET
+// pattern in app.module.ts. TODO(Phase 2): replace with a per-restaurant, hashed
+// credential instead of one shared platform-wide passcode.
+const STAFF_PASSCODE = (() => {
+  const value = process.env['STAFF_PASSCODE'];
+  if (value) return value;
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error('STAFF_PASSCODE environment variable is required in production');
+  }
+  return 'feast-staff'; // dev-only fallback
+})();
 
 interface SavedAddress {
   label: string;
