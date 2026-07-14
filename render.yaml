@@ -1,0 +1,63 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: connect this repo in the Render Dashboard ("New" > "Blueprint").
+# Render finds this file automatically and provisions everything below.
+#
+# NOTE ON PLANS: using `free` for a fast, no-cost prototype path. Two caveats
+# worth knowing before the July 24 demo:
+#   - Free Postgres expires 30 days after creation (with a ~14-day grace
+#     period) — fine for the demo window, but don't forget about it after.
+#   - Free web services spin down after 15 min idle, with a 30-60s cold start
+#     on the next request. If Lance/Eddie/the attorney hit a cold service live
+#     during the demo, that's an awkward pause. Recommend switching feast-api
+#     and feast-admin to `starter` ($7/mo each) for demo week specifically —
+#     trivial cost for a live-demo reliability guarantee.
+# Verify current pricing/limits at render.com/pricing before relying on this.
+
+databases:
+  - name: feast-db
+    databaseName: feast
+    user: feast
+    plan: free
+
+services:
+  - type: web
+    name: feast-api
+    runtime: node
+    plan: free
+    healthCheckPath: /api/healthz
+    buildCommand: >-
+      corepack enable &&
+      corepack prepare pnpm@9.15.0 --activate &&
+      pnpm install --no-frozen-lockfile &&
+      pnpm --filter @feast/api run prisma:generate &&
+      pnpm --filter @feast/api run build
+    startCommand: pnpm --filter @feast/api run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: feast-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STAFF_PASSCODE
+        sync: false # set a real per-deployment passcode in the Render Dashboard
+      - key: STRIPE_SECRET_KEY
+        sync: false # your Stripe test-mode secret key
+      - key: CORS_ORIGINS
+        value: https://feast-admin.onrender.com # update if you rename the admin service or add a custom domain
+
+  - type: web
+    name: feast-admin
+    runtime: node
+    plan: free
+    buildCommand: >-
+      corepack enable &&
+      corepack prepare pnpm@9.15.0 --activate &&
+      pnpm install --no-frozen-lockfile &&
+      pnpm --filter @feast/admin run build
+    startCommand: pnpm --filter @feast/admin run start
+    envVars:
+      - key: API_URL
+        value: https://feast-api.onrender.com # update if you rename the api service or add a custom domain
