@@ -26,8 +26,6 @@ services:
     plan: free
     healthCheckPath: /api/healthz
     buildCommand: >-
-      corepack enable &&
-      corepack prepare pnpm@9.15.0 --activate &&
       pnpm install --no-frozen-lockfile &&
       pnpm --filter @feast/api run prisma:generate &&
       pnpm --filter @feast/api run build
@@ -53,8 +51,6 @@ services:
     runtime: node
     plan: free
     buildCommand: >-
-      corepack enable &&
-      corepack prepare pnpm@9.15.0 --activate &&
       pnpm install --no-frozen-lockfile &&
       pnpm --filter @feast/admin run build
     startCommand: pnpm --filter @feast/admin run start
