@@ -26,7 +26,7 @@ services:
     plan: free
     healthCheckPath: /api/healthz
     buildCommand: >-
-      pnpm install --no-frozen-lockfile &&
+      pnpm install --no-frozen-lockfile --prod=false &&
       pnpm --filter @feast/api run prisma:generate &&
       pnpm --filter @feast/api run build
     startCommand: pnpm --filter @feast/api run start
@@ -51,7 +51,7 @@ services:
     runtime: node
     plan: free
     buildCommand: >-
-      pnpm install --no-frozen-lockfile &&
+      pnpm install --no-frozen-lockfile --prod=false &&
       pnpm --filter @feast/admin run build
     startCommand: pnpm --filter @feast/admin run start
     envVars:
