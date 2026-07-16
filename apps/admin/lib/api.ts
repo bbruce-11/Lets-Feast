@@ -27,6 +27,33 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json();
 }
 
+export interface CreateMenuItemInput {
+  category: string;
+  name: string;
+  description?: string;
+  price: number;
+}
+
+export interface CreateRestaurantInput {
+  name: string;
+  cuisine: string;
+  neighborhood: string;
+  commissionRatePercent: number;
+  menuItems?: CreateMenuItemInput[];
+}
+
 export const adminApi = {
   getRestaurants: () => request<Restaurant[]>('/restaurants'),
+  createRestaurant: (input: CreateRestaurantInput) =>
+    request<Restaurant>('/restaurants', { method: 'POST', body: JSON.stringify(input) }),
+  addMenuItems: (restaurantId: string, items: CreateMenuItemInput[]) =>
+    request(`/restaurants/${restaurantId}/menu-items`, {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    }),
+  setCommissionRate: (restaurantId: string, commissionRatePercent: number) =>
+    request(`/restaurants/${restaurantId}/commission-rate`, {
+      method: 'PATCH',
+      body: JSON.stringify({ commissionRatePercent }),
+    }),
 };

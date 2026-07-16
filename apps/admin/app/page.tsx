@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
 import { adminApi } from "@/lib/api";
 import type { Restaurant } from "@/lib/api";
-import { LogOut, ShieldCheck, Loader2, Store, Star } from "lucide-react";
+import { LogOut, ShieldCheck, Loader2, Store, Star, Plus } from "lucide-react";
 
 export default function AdminHome() {
   return <AdminDashboard />;
 }
 
 function AdminDashboard() {
+  const router = useRouter();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,11 +60,20 @@ function AdminDashboard() {
       </header>
 
       <main className="flex-1 p-6 max-w-5xl mx-auto w-full">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">Restaurants</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {restaurants.length} registered restaurant{restaurants.length !== 1 ? "s" : ""}
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Restaurants</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {restaurants.length} registered restaurant{restaurants.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <button
+            onClick={() => router.push("/restaurants/new")}
+            className="h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            <Plus className="w-4 h-4" />
+            Add Restaurant
+          </button>
         </div>
 
         {isLoading ? (

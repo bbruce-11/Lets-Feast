@@ -28,6 +28,7 @@ services:
     buildCommand: >-
       pnpm install --no-frozen-lockfile --prod=false &&
       pnpm --filter @feast/api run prisma:generate &&
+      pnpm --filter @feast/api run prisma:push &&
       pnpm --filter @feast/api run build
     startCommand: pnpm --filter @feast/api run start
     envVars:

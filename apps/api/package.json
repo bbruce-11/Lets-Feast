@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {

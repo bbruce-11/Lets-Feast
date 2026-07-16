@@ -67,12 +67,37 @@ model Restaurant {
   feastWindowId String?  @map("feast_window_id")
   memberDeal    String?  @map("member_deal")
 
-  menuItems    MenuItem[]
-  feastWindows FeastWindow[]
-  orders       Order[]
-  staff        RestaurantStaff[]
+  menuItems       MenuItem[]
+  feastWindows    FeastWindow[]
+  orders          Order[]
+  staff           RestaurantStaff[]
+  commissionRules CommissionRule[]
 
   @@map("restaurants")
+}
+
+// ---------------------------------------------------------------------------
+// Commission Rules — time-boxed per-restaurant platform commission rate.
+// Never edit a row in place once orders may have referenced it; to change a
+// restaurant's rate, close the current rule (set endsAt) and insert a new
+// one. This keeps historical orders' fee snapshots accurate even after rates
+// change, per the immutable-fee-snapshot principle used across the platform.
+// ---------------------------------------------------------------------------
+model CommissionRule {
+  id             String    @id @default(cuid())
+  restaurantId   String    @map("restaurant_id")
+  /// Platform commission rate in basis points (e.g. 1500 = 15.00%).
+  platformFeeBps Int       @map("platform_fee_bps")
+  startsAt       DateTime  @default(now()) @map("starts_at") @db.Timestamptz(6)
+  /// Null means this is the currently-active rule for the restaurant.
+  endsAt         DateTime? @map("ends_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  orders     Order[]
+
+  @@index([restaurantId, startsAt])
+  @@map("commission_rules")
 }
 
 // ---------------------------------------------------------------------------
@@ -147,8 +172,18 @@ model Order {
   driverId         Int?     @map("driver_id")
   items            Json     @default("[]")
   subtotal         Decimal  @db.Decimal(10, 2)
-  /// Server-computed total: subtotal + delivery fee + service fee − feast discount.
+  /// Server-computed total: subtotal + delivery fee + service fee + tip − feast discount.
   total            Decimal? @db.Decimal(10, 2)
+  /// Customer-entered courier tip, passed through 100% to the courier. Integer cents.
+  tipCents             Int     @default(0) @map("tip_cents")
+  /// Immutable fee snapshot, computed once at order placement from the
+  /// restaurant's active CommissionRule at that moment. Never recomputed
+  /// after the fact, even if the restaurant's rate later changes.
+  commissionRuleId     String? @map("commission_rule_id")
+  platformFeeCents     Int?    @map("platform_fee_cents")
+  restaurantPayoutCents Int?   @map("restaurant_payout_cents")
+  /// Flat courier base fee + 100% tip passthrough, snapshotted at placement.
+  courierFeeCents      Int?    @map("courier_fee_cents")
   /// Stripe PaymentIntent id. Unique — one successful PI backs exactly one order.
   paymentIntentId  String?  @unique @map("payment_intent_id")
   paymentStatus    String?  @map("payment_status")
@@ -178,6 +213,7 @@ model Order {
   restaurant  Restaurant   @relation(fields: [restaurantId], references: [id])
   feastWindow FeastWindow? @relation(fields: [feastWindowId], references: [id])
   driver      User?        @relation("DriverOrders", fields: [driverId], references: [id])
+  commissionRule CommissionRule? @relation(fields: [commissionRuleId], references: [id])
   orderItems  OrderItem[]
 
   @@map("orders")

@@ -23,6 +23,7 @@ export interface PricedOrder {
   subtotalCents: number;
   deliveryFeeCents: number;
   serviceFeeCents: number;
+  tipCents: number;
   discountCents: number;
   totalCents: number;
 }
@@ -40,11 +41,18 @@ export class PricingService {
     restaurantId: string;
     deliveryType: 'delivery' | 'pickup';
     feastWindowId?: string | null;
+    tipCents?: number;
     items: RequestedItem[];
   }): Promise<PriceResult> {
     const { restaurantId, deliveryType } = input;
     if (!input.items.length)
       return { ok: false, status: 400, error: 'Order must contain at least one item' };
+
+    const tipCents = input.tipCents ?? 0;
+    if (!Number.isInteger(tipCents) || tipCents < 0)
+      return { ok: false, status: 400, error: 'tipCents must be a non-negative integer' };
+    if (tipCents > 0 && deliveryType !== 'delivery')
+      return { ok: false, status: 400, error: 'Tips are only applicable to delivery orders' };
 
     const ids = [...new Set(input.items.map((r) => r.menuItemId))];
     const menuRows = await this.prisma.menuItem.findMany({
@@ -85,12 +93,12 @@ export class PricingService {
 
     const totalCents = Math.max(
       0,
-      subtotalCents + deliveryFeeCents + serviceFeeCents - discountCents,
+      subtotalCents + deliveryFeeCents + serviceFeeCents + tipCents - discountCents,
     );
 
     return {
       ok: true,
-      priced: { lineItems, subtotalCents, deliveryFeeCents, serviceFeeCents, discountCents, totalCents },
+      priced: { lineItems, subtotalCents, deliveryFeeCents, serviceFeeCents, tipCents, discountCents, totalCents },
     };
   }
 

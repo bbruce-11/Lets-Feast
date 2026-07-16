@@ -12,6 +12,7 @@ import { WsService } from '../ws/ws.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PricingService } from '../shared/pricing.service';
 import { StripeService } from '../shared/stripe.service';
+import { CommissionService } from '../shared/commission.service';
 import {
   deriveDriverProgress,
   deriveEtaMinutes,
@@ -72,6 +73,7 @@ export class OrdersService {
     private readonly notifications: NotificationsService,
     private readonly pricing: PricingService,
     private readonly stripeService: StripeService,
+    private readonly commission: CommissionService,
   ) {}
 
   private async syncStatus<
@@ -130,6 +132,7 @@ export class OrdersService {
       deliveryLng?: number | null;
       items: unknown[];
       paymentIntentId: string;
+      tipCents?: number;
     },
   ) {
     const { restaurantId, feastWindowId, deliveryAddress, deliveryLat, deliveryLng, paymentIntentId } = body;
@@ -147,13 +150,23 @@ export class OrdersService {
       restaurantId,
       deliveryType: effectiveDeliveryType,
       feastWindowId: feastWindowId ?? null,
+      tipCents: body.tipCents ?? 0,
       items: normalized.items,
     });
     if (!priceResult.ok) throw new BadRequestException(priceResult.error);
 
-    const { lineItems, subtotalCents, totalCents } = priceResult.priced;
+    const { lineItems, subtotalCents, tipCents, totalCents } = priceResult.priced;
     const subtotal = (subtotalCents / 100).toFixed(2);
     const total = (totalCents / 100).toFixed(2);
+
+    // Computed before touching Stripe: a misconfigured restaurant (no active
+    // commission rule) should fail before we verify/charge payment, not after.
+    const commissionBreakdown = await this.commission.computeFees({
+      restaurantId,
+      subtotalCents,
+      tipCents,
+      deliveryType: effectiveDeliveryType,
+    });
 
     let paymentIntent;
     try {
@@ -208,6 +221,11 @@ export class OrdersService {
             items: lineItems as unknown as Prisma.InputJsonValue,
             subtotal,
             total,
+            tipCents,
+            commissionRuleId: commissionBreakdown.commissionRuleId,
+            platformFeeCents: commissionBreakdown.platformFeeCents,
+            restaurantPayoutCents: commissionBreakdown.restaurantPayoutCents,
+            courierFeeCents: commissionBreakdown.courierFeeCents,
             paymentIntentId,
             paymentStatus: paymentIntent.status,
             cardBrand,
