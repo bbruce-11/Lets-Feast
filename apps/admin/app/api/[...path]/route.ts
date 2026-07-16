@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 const API_URL = process.env.API_URL ?? 'http://localhost:8080';
 const COOKIE_NAME = 'feast_admin_token';
 
-type Context = { params: { path: string[] } };
+type Context = { params: Promise<{ path: string[] }> };
 
 async function proxy(req: NextRequest, { params }: Context): Promise<NextResponse> {
-  const token = cookies().get(COOKIE_NAME)?.value;
-  const url = `${API_URL}/api/${params.path.join('/')}`;
+  const { path } = await params;
+  const token = (await cookies()).get(COOKIE_NAME)?.value;
+  const url = `${API_URL}/api/${path.join('/')}`;
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;

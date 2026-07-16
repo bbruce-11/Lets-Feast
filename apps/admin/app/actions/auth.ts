@@ -21,7 +21,7 @@ export async function loginAction(
       return { error: body.message ?? 'Invalid credentials' };
     }
     const { token } = (await res.json()) as { token: string };
-    cookies().set(COOKIE_NAME, token, {
+    (await cookies()).set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -35,6 +35,6 @@ export async function loginAction(
 }
 
 export async function logoutAction(): Promise<void> {
-  cookies().delete(COOKIE_NAME);
+  (await cookies()).delete(COOKIE_NAME);
   redirect('/login');
 }
