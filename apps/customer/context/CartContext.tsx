@@ -9,12 +9,14 @@ export interface CartItem {
 interface CartContextValue {
   restaurantId: string | null;
   restaurantName: string | null;
+  feastWindowId: string | null;
   items: CartItem[];
   totalItems: number;
   subtotalCents: number;
   addItem: (menuItem: ApiMenuItem, restaurantName: string) => void;
   removeItem: (menuItemId: string) => void;
   updateQuantity: (menuItemId: string, quantity: number) => void;
+  setFeastWindow: (feastWindowId: string | null) => void;
   clear: () => void;
 }
 
@@ -23,6 +25,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartContextProvider({ children }: { children: ReactNode }) {
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [restaurantName, setRestaurantName] = useState<string | null>(null);
+  const [feastWindowId, setFeastWindowId] = useState<string | null>(null);
   const [items, setItems] = useState<CartItem[]>([]);
 
   function addItem(menuItem: ApiMenuItem, name: string) {
@@ -33,6 +36,7 @@ export function CartContextProvider({ children }: { children: ReactNode }) {
       setItems([{ menuItem, quantity: 1 }]);
       setRestaurantId(menuItem.restaurantId);
       setRestaurantName(name);
+      setFeastWindowId(null);
       return;
     }
     setRestaurantId(menuItem.restaurantId);
@@ -54,6 +58,7 @@ export function CartContextProvider({ children }: { children: ReactNode }) {
       if (next.length === 0) {
         setRestaurantId(null);
         setRestaurantName(null);
+        setFeastWindowId(null);
       }
       return next;
     });
@@ -69,10 +74,15 @@ export function CartContextProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function setFeastWindow(id: string | null) {
+    setFeastWindowId(id);
+  }
+
   function clear() {
     setItems([]);
     setRestaurantId(null);
     setRestaurantName(null);
+    setFeastWindowId(null);
   }
 
   const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
@@ -90,12 +100,14 @@ export function CartContextProvider({ children }: { children: ReactNode }) {
       value={{
         restaurantId,
         restaurantName,
+        feastWindowId,
         items,
         totalItems,
         subtotalCents,
         addItem,
         removeItem,
         updateQuantity,
+        setFeastWindow,
         clear,
       }}
     >

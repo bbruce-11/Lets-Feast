@@ -144,6 +144,7 @@ export interface CreateIntentPayload {
   restaurantId: string;
   deliveryType: 'delivery' | 'pickup';
   items: RequestedItem[];
+  feastWindowId?: string;
 }
 
 export interface CreateIntentResult {
@@ -184,6 +185,7 @@ export interface PlaceOrderPayload {
   items: RequestedItem[];
   paymentIntentId: string;
   tipCents?: number;
+  feastWindowId?: string;
 }
 
 export interface ApiOrder {
@@ -202,4 +204,37 @@ export function placeOrder(payload: PlaceOrderPayload) {
 
 export function getOrder(id: number) {
   return request<ApiOrder>(`/orders/${id}`, {}, true);
+}
+
+// -----------------------------------------------------------------------
+// Feast Windows — group ordering. `discount` is a flat dollar amount off
+// the order (not a percentage) - see PricingService.priceOrder, which does
+// `discountCents = discount * 100` directly, no percentage math involved.
+// -----------------------------------------------------------------------
+
+export interface ApiFeastWindow {
+  id: string;
+  restaurantId: string;
+  deliveryStart: string;
+  deliveryEnd: string;
+  spotsTotal: number;
+  spotsFilled: number;
+  discount: string;
+  endTime: number;
+}
+
+export function getFeastWindows() {
+  return request<ApiFeastWindow[]>('/feast-windows');
+}
+
+export function getFeastWindow(id: string) {
+  return request<ApiFeastWindow>(`/feast-windows/${id}`);
+}
+
+export function getJoinedFeastWindowIds() {
+  return request<string[]>('/feast-windows/me/joined', {}, true);
+}
+
+export function joinFeastWindow(id: string) {
+  return request<ApiFeastWindow>(`/feast-windows/${id}/join`, { method: 'POST' }, true);
 }

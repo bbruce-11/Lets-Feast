@@ -3,7 +3,8 @@ import { router } from 'expo-router';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
-import { getRestaurants, type ApiRestaurant } from '@/lib/api';
+import { FeastWindowCard } from '@/components/FeastWindowCard';
+import { getRestaurants, getFeastWindows, getJoinedFeastWindowIds, joinFeastWindow, type ApiRestaurant } from '@/lib/api';
 
 export default function HomeScreen() {
   const colors = useColors();
@@ -11,6 +12,21 @@ export default function HomeScreen() {
     queryKey: ['restaurants'],
     queryFn: getRestaurants,
   });
+  const { data: feastWindows } = useQuery({
+    queryKey: ['feast-windows'],
+    queryFn: getFeastWindows,
+  });
+  const { data: joinedIds, refetch: refetchJoined } = useQuery({
+    queryKey: ['feast-windows', 'joined'],
+    queryFn: getJoinedFeastWindowIds,
+  });
+
+  const restaurantNameById = new Map((restaurants ?? []).map((r) => [r.id, r.name]));
+
+  async function handleJoinWindow(windowId: string) {
+    await joinFeastWindow(windowId);
+    await refetchJoined();
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -37,6 +53,26 @@ export default function HomeScreen() {
           contentContainerStyle={styles.list}
           onRefresh={refetch}
           refreshing={isRefetching}
+          ListHeaderComponent={
+            feastWindows && feastWindows.length > 0 ? (
+              <View style={styles.feastWindowsSection}>
+                <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Feast Windows</Text>
+                <Text style={[styles.sectionSubtitle, { color: colors.mutedForeground }]}>
+                  Join with others ordering nearby to unlock a discount
+                </Text>
+                {feastWindows.map((win) => (
+                  <View key={win.id} style={{ marginTop: 10 }}>
+                    <FeastWindowCard
+                      window={win}
+                      isJoined={joinedIds?.includes(win.id) ?? false}
+                      onJoin={handleJoinWindow}
+                      restaurantName={restaurantNameById.get(win.restaurantId)}
+                    />
+                  </View>
+                ))}
+              </View>
+            ) : null
+          }
           ListEmptyComponent={
             <View style={styles.centered}>
               <Text style={{ color: colors.mutedForeground }}>
@@ -93,6 +129,9 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 14, marginTop: 4 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60 },
   list: { paddingHorizontal: 16, paddingBottom: 24, gap: 12 },
+  feastWindowsSection: { marginBottom: 20, paddingHorizontal: 4 },
+  sectionTitle: { fontSize: 18, fontWeight: '700' },
+  sectionSubtitle: { fontSize: 13, marginTop: 2, marginBottom: 4 },
   card: { borderRadius: 16, borderWidth: 1, padding: 16 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardName: { fontSize: 17, fontWeight: '700', flex: 1 },

@@ -5,7 +5,15 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useCart } from '@/context/CartContext';
-import { getRestaurant, getRestaurantMenu, type ApiMenuItem } from '@/lib/api';
+import { FeastWindowCard } from '@/components/FeastWindowCard';
+import {
+  getRestaurant,
+  getRestaurantMenu,
+  getFeastWindows,
+  getJoinedFeastWindowIds,
+  joinFeastWindow,
+  type ApiMenuItem,
+} from '@/lib/api';
 
 export default function RestaurantDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -22,6 +30,23 @@ export default function RestaurantDetailScreen() {
     queryFn: () => getRestaurantMenu(id!),
     enabled: !!id,
   });
+
+  const { data: allWindows } = useQuery({
+    queryKey: ['feast-windows'],
+    queryFn: getFeastWindows,
+  });
+  const { data: joinedIds, refetch: refetchJoined } = useQuery({
+    queryKey: ['feast-windows', 'joined'],
+    queryFn: getJoinedFeastWindowIds,
+  });
+  const restaurantWindow = allWindows?.find((w) => w.restaurantId === id);
+  const { setFeastWindow } = useCart();
+
+  async function handleJoinWindow(windowId: string) {
+    await joinFeastWindow(windowId);
+    await refetchJoined();
+    setFeastWindow(windowId);
+  }
 
   const grouped = useMemo(() => {
     if (!menu) return [];
@@ -55,6 +80,16 @@ export default function RestaurantDetailScreen() {
           {restaurant?.cuisine} · {restaurant?.neighborhood}
         </Text>
       </View>
+
+      {restaurantWindow && (
+        <View style={styles.feastWindowSection}>
+          <FeastWindowCard
+            window={restaurantWindow}
+            isJoined={joinedIds?.includes(restaurantWindow.id) ?? false}
+            onJoin={handleJoinWindow}
+          />
+        </View>
+      )}
 
       {grouped.length === 0 ? (
         <Text style={[styles.emptyMenu, { color: colors.mutedForeground }]}>
@@ -108,6 +143,7 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
   name: { fontSize: 24, fontWeight: '700' },
   meta: { fontSize: 14, marginTop: 4 },
+  feastWindowSection: { paddingHorizontal: 20, marginTop: 16 },
   emptyMenu: { textAlign: 'center', marginTop: 40 },
   categoryBlock: { paddingHorizontal: 20, marginTop: 20 },
   categoryTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },

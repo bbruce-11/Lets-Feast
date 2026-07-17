@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
 import {
   ActivityIndicator,
   ScrollView,
@@ -12,14 +13,20 @@ import {
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { useColors } from '@/hooks/useColors';
 import { useCart } from '@/context/CartContext';
-import { createPaymentIntent, confirmPayment, placeOrder } from '@/lib/api';
+import { createPaymentIntent, confirmPayment, placeOrder, getFeastWindow } from '@/lib/api';
 
 const TIP_PRESETS_CENTS = [0, 300, 500, 800];
 
 export default function CheckoutScreen() {
   const colors = useColors();
   const { createPaymentMethod } = useStripe();
-  const { restaurantId, restaurantName, items, subtotalCents, clear } = useCart();
+  const { restaurantId, restaurantName, feastWindowId, items, subtotalCents, clear } = useCart();
+
+  const { data: feastWindow } = useQuery({
+    queryKey: ['feast-window', feastWindowId],
+    queryFn: () => getFeastWindow(feastWindowId!),
+    enabled: !!feastWindowId,
+  });
 
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
   const [address, setAddress] = useState('');
@@ -47,6 +54,7 @@ export default function CheckoutScreen() {
         restaurantId,
         deliveryType,
         items: requestedItems,
+        feastWindowId: feastWindowId ?? undefined,
       });
 
       // 2. Tokenize the card into a PaymentMethod. Raw card details never
@@ -72,6 +80,7 @@ export default function CheckoutScreen() {
         items: requestedItems,
         paymentIntentId: intent.paymentIntentId,
         tipCents: effectiveTip,
+        feastWindowId: feastWindowId ?? undefined,
       });
 
       clear();
@@ -186,8 +195,16 @@ export default function CheckoutScreen() {
             <Text style={{ color: colors.foreground }}>${(effectiveTip / 100).toFixed(2)}</Text>
           </View>
         )}
+        {feastWindow && (
+          <View style={styles.totalRow}>
+            <Text style={{ color: colors.accent }}>Feast Window discount</Text>
+            <Text style={{ color: colors.accent, fontWeight: '600' }}>
+              -${Number.parseFloat(feastWindow.discount).toFixed(2)}
+            </Text>
+          </View>
+        )}
         <Text style={[styles.feeNote, { color: colors.mutedForeground }]}>
-          Delivery fee, service fee, and any Feast Window discount are calculated at payment.
+          Delivery fee and service fee are calculated at payment.
         </Text>
       </View>
 
