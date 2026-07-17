@@ -45,7 +45,7 @@ services:
       - key: STRIPE_SECRET_KEY
         sync: false # your Stripe test-mode secret key
       - key: CORS_ORIGINS
-        value: https://feast-admin.onrender.com # update if you rename the admin service or add a custom domain
+        value: https://feast-admin.onrender.com,https://feast-restaurant.onrender.com # update if you rename these services or add custom domains
 
   - type: web
     name: feast-admin
@@ -57,4 +57,16 @@ services:
     startCommand: pnpm --filter @feast/admin run start
     envVars:
       - key: API_URL
-        value: https://feast-api.onrender.com # update if you rename the api service or add a custom domain
+        value: https://feast-api-s06s.onrender.com # update if you rename the api service or add a custom domain
+
+  - type: web
+    name: feast-restaurant
+    runtime: node
+    plan: free
+    buildCommand: >-
+      pnpm install --no-frozen-lockfile --prod=false &&
+      pnpm --filter @feast/restaurant run build
+    startCommand: pnpm --filter @feast/restaurant run start
+    envVars:
+      - key: API_URL
+        value: https://feast-api-s06s.onrender.com # update if you rename the api service or add a custom domain
