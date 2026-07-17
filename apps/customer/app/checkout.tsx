@@ -75,7 +75,7 @@ export default function CheckoutScreen() {
       });
 
       clear();
-      router.replace({ pathname: '/order-confirmation', params: { orderId: String(order.id) } });
+      router.replace({ pathname: '/order/[id]', params: { id: String(order.id) } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong placing your order');
     } finally {

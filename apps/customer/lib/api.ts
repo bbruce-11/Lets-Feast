@@ -191,8 +191,15 @@ export interface ApiOrder {
   status: string;
   total: string;
   restaurantId: string;
+  restaurantName: string | null;
+  driverProgress: number;
+  etaMinutes: number;
 }
 
 export function placeOrder(payload: PlaceOrderPayload) {
   return request<ApiOrder>('/orders', { method: 'POST', body: JSON.stringify(payload) }, true);
+}
+
+export function getOrder(id: number) {
+  return request<ApiOrder>(`/orders/${id}`, {}, true);
 }
