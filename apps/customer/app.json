@@ -20,7 +20,17 @@
         "backgroundColor": "#F7F1E6"
       }
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.feast.customer",
+          "enableGooglePay": false
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }

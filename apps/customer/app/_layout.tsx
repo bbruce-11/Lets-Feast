@@ -6,12 +6,14 @@ import {
   useFonts,
 } from '@expo-google-fonts/inter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthContextProvider } from '@/context/AuthContext';
+import { CartContextProvider } from '@/context/CartContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,6 +27,8 @@ function RootLayoutNav() {
       <Stack.Screen name="signup" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="restaurant/[id]" />
+      <Stack.Screen name="checkout" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="order-confirmation" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
     </Stack>
   );
 }
@@ -46,11 +50,15 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthContextProvider>
-            <RootLayoutNav />
-          </AuthContextProvider>
-        </QueryClientProvider>
+        <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''}>
+          <QueryClientProvider client={queryClient}>
+            <AuthContextProvider>
+              <CartContextProvider>
+                <RootLayoutNav />
+              </CartContextProvider>
+            </AuthContextProvider>
+          </QueryClientProvider>
+        </StripeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

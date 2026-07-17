@@ -128,3 +128,71 @@ export function getRestaurant(id: string) {
 export function getRestaurantMenu(id: string) {
   return request<ApiMenuItem[]>(`/restaurants/${id}/menu`);
 }
+
+// -----------------------------------------------------------------------
+// Payments — server-side confirmation pattern: the client tokenizes card
+// details into a Stripe PaymentMethod (raw card data never touches our
+// backend), then the server confirms the PaymentIntent using that ID.
+// -----------------------------------------------------------------------
+
+export interface RequestedItem {
+  menuItemId: string;
+  quantity: number;
+}
+
+export interface CreateIntentPayload {
+  restaurantId: string;
+  deliveryType: 'delivery' | 'pickup';
+  items: RequestedItem[];
+}
+
+export interface CreateIntentResult {
+  clientSecret: string;
+  paymentIntentId: string;
+  amountCents: number;
+  breakdown: {
+    subtotalCents: number;
+    deliveryFeeCents: number;
+    serviceFeeCents: number;
+    discountCents: number;
+    totalCents: number;
+  };
+}
+
+export function createPaymentIntent(payload: CreateIntentPayload) {
+  return request<CreateIntentResult>('/payments/create-intent', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }, true);
+}
+
+export function confirmPayment(paymentIntentId: string, paymentMethod: string) {
+  return request<{ status: string }>('/payments/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ paymentIntentId, paymentMethod }),
+  }, true);
+}
+
+// -----------------------------------------------------------------------
+// Orders
+// -----------------------------------------------------------------------
+
+export interface PlaceOrderPayload {
+  restaurantId: string;
+  deliveryType: 'delivery' | 'pickup';
+  deliveryAddress?: string | null;
+  items: RequestedItem[];
+  paymentIntentId: string;
+  tipCents?: number;
+}
+
+export interface ApiOrder {
+  id: number;
+  status: string;
+  total: string;
+  restaurantId: string;
+}
+
+export function placeOrder(payload: PlaceOrderPayload) {
+  return request<ApiOrder>('/orders', { method: 'POST', body: JSON.stringify(payload) }, true);
+}

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
+import { useCart } from '@/context/CartContext';
 import { getRestaurant, getRestaurantMenu, type ApiMenuItem } from '@/lib/api';
 
 export default function RestaurantDetailScreen() {
@@ -64,7 +65,7 @@ export default function RestaurantDetailScreen() {
           <View key={category} style={styles.categoryBlock}>
             <Text style={[styles.categoryTitle, { color: colors.foreground }]}>{category}</Text>
             {items.map((item) => (
-              <MenuItemRow key={item.id} item={item} />
+              <MenuItemRow key={item.id} item={item} restaurantName={restaurant?.name ?? ''} />
             ))}
           </View>
         ))
@@ -73,8 +74,9 @@ export default function RestaurantDetailScreen() {
   );
 }
 
-function MenuItemRow({ item }: { item: ApiMenuItem }) {
+function MenuItemRow({ item, restaurantName }: { item: ApiMenuItem; restaurantName: string }) {
   const colors = useColors();
+  const { addItem } = useCart();
   const price = Number.parseFloat(item.price);
 
   return (
@@ -86,8 +88,15 @@ function MenuItemRow({ item }: { item: ApiMenuItem }) {
             {item.description}
           </Text>
         )}
+        <Text style={[styles.menuItemPrice, { color: colors.foreground }]}>${price.toFixed(2)}</Text>
       </View>
-      <Text style={[styles.menuItemPrice, { color: colors.foreground }]}>${price.toFixed(2)}</Text>
+      <TouchableOpacity
+        onPress={() => addItem(item, restaurantName)}
+        style={[styles.addButton, { backgroundColor: colors.primary }]}
+        hitSlop={8}
+      >
+        <Ionicons name="add" size={20} color={colors.primaryForeground} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -112,4 +121,12 @@ const styles = StyleSheet.create({
   menuItemName: { fontSize: 15, fontWeight: '600' },
   menuItemDesc: { fontSize: 13, marginTop: 2 },
   menuItemPrice: { fontSize: 15, fontWeight: '600' },
+  addButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
 });
