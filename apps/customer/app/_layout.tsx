@@ -27,6 +27,7 @@ function RootLayoutNav() {
       <Stack.Screen name="signup" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="restaurant/[id]" />
+      <Stack.Screen name="orders" />
       <Stack.Screen name="checkout" options={{ presentation: 'modal' }} />
       <Stack.Screen name="order/[id]" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
     </Stack>

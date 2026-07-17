@@ -6,13 +6,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { useColors } from '@/hooks/useColors';
 import { useCart } from '@/context/CartContext';
+import { AddressPicker } from '@/components/AddressPicker';
+import type { GeocodeResult } from '@/lib/geocoding';
 import { createPaymentIntent, confirmPayment, placeOrder, getFeastWindow } from '@/lib/api';
 
 const TIP_PRESETS_CENTS = [0, 300, 500, 800];
@@ -29,7 +30,7 @@ export default function CheckoutScreen() {
   });
 
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
-  const [address, setAddress] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState<GeocodeResult | null>(null);
   const [tipCents, setTipCents] = useState(500);
   const [cardComplete, setCardComplete] = useState(false);
   const [isPlacing, setIsPlacing] = useState(false);
@@ -37,7 +38,7 @@ export default function CheckoutScreen() {
 
   const effectiveTip = deliveryType === 'delivery' ? tipCents : 0;
   const canSubmit =
-    cardComplete && !isPlacing && (deliveryType === 'pickup' || address.trim().length > 0);
+    cardComplete && !isPlacing && (deliveryType === 'pickup' || selectedAddress != null);
 
   async function handlePlaceOrder() {
     if (!restaurantId || items.length === 0) return;
@@ -76,7 +77,9 @@ export default function CheckoutScreen() {
       const order = await placeOrder({
         restaurantId,
         deliveryType,
-        deliveryAddress: deliveryType === 'delivery' ? address.trim() : null,
+        deliveryAddress: deliveryType === 'delivery' ? selectedAddress?.displayName : null,
+        deliveryLat: deliveryType === 'delivery' ? selectedAddress?.lat : null,
+        deliveryLng: deliveryType === 'delivery' ? selectedAddress?.lng : null,
         items: requestedItems,
         paymentIntentId: intent.paymentIntentId,
         tipCents: effectiveTip,
@@ -129,12 +132,9 @@ export default function CheckoutScreen() {
       {deliveryType === 'delivery' && (
         <View style={styles.section}>
           <Text style={[styles.sectionLabel, { color: colors.foreground }]}>Delivery address</Text>
-          <TextInput
-            value={address}
-            onChangeText={setAddress}
-            placeholder="123 Main St, Apt 4B"
-            placeholderTextColor={colors.mutedForeground}
-            style={[styles.input, { backgroundColor: colors.input, color: colors.foreground }]}
+          <AddressPicker
+            value={selectedAddress?.displayName ?? ''}
+            onSelect={setSelectedAddress}
           />
         </View>
       )}
@@ -250,7 +250,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  input: { height: 52, borderRadius: 14, paddingHorizontal: 16, fontSize: 16 },
   cardField: { width: '100%', height: 50 },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   feeNote: { fontSize: 12, marginTop: 6 },

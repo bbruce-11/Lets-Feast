@@ -182,6 +182,8 @@ export interface PlaceOrderPayload {
   restaurantId: string;
   deliveryType: 'delivery' | 'pickup';
   deliveryAddress?: string | null;
+  deliveryLat?: number | null;
+  deliveryLng?: number | null;
   items: RequestedItem[];
   paymentIntentId: string;
   tipCents?: number;
@@ -196,6 +198,8 @@ export interface ApiOrder {
   restaurantName: string | null;
   driverProgress: number;
   etaMinutes: number;
+  createdAt: string;
+  rating: number | null;
 }
 
 export function placeOrder(payload: PlaceOrderPayload) {
@@ -204,6 +208,18 @@ export function placeOrder(payload: PlaceOrderPayload) {
 
 export function getOrder(id: number) {
   return request<ApiOrder>(`/orders/${id}`, {}, true);
+}
+
+export function getMyOrders() {
+  return request<ApiOrder[]>('/orders/me', {}, true);
+}
+
+export function rateOrder(id: number, rating: number, comment?: string) {
+  return request<ApiOrder>(
+    `/orders/${id}/rating`,
+    { method: 'POST', body: JSON.stringify({ rating, comment }) },
+    true,
+  );
 }
 
 // -----------------------------------------------------------------------

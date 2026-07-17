@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useAuth } from '@/context/AuthContext';
 
@@ -20,6 +21,15 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity
+        onPress={() => router.push('/orders')}
+        style={[styles.menuRow, { borderColor: colors.border }]}
+      >
+        <Ionicons name="receipt-outline" size={20} color={colors.foreground} />
+        <Text style={[styles.menuRowText, { color: colors.foreground }]}>Order History</Text>
+        <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
+      </TouchableOpacity>
+
+      <TouchableOpacity
         onPress={handleSignOut}
         style={[styles.signOutButton, { borderColor: colors.border }]}
       >
@@ -32,6 +42,16 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20, paddingTop: 24 },
   header: { marginBottom: 32 },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    marginBottom: 24,
+  },
+  menuRowText: { flex: 1, fontSize: 15, fontWeight: '600' },
   name: { fontSize: 24, fontWeight: '700' },
   email: { fontSize: 14, marginTop: 4 },
   signOutButton: { borderWidth: 1, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
