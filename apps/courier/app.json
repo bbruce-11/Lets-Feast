@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Let's Feast — Courier",
+    "slug": "feast-courier",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "feastcourier",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F1E6"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.feast.courier"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F1E6"
+      }
+    },
+    "plugins": ["expo-router", "expo-font"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

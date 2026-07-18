@@ -9,6 +9,61 @@ export class CourierService {
     private readonly ws: WsService,
   ) {}
 
+  /** Returns unclaimed orders ready for driver pickup (preparing, no driver yet). */
+  async getAvailableOrders() {
+    const rows = await this.prisma.order.findMany({
+      where: { status: 'preparing', driverId: null, deliveryType: 'delivery' },
+      include: { restaurant: { select: { name: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+    return rows.map((r) => ({
+      ...r,
+      subtotal: r.subtotal.toString(),
+      restaurantName: r.restaurant?.name ?? null,
+      restaurant: undefined,
+    }));
+  }
+
+  /**
+   * Claims an unassigned order for this driver, advancing it to
+   * driver_assigned. Uses an atomic conditional update (WHERE driverId IS
+   * NULL) rather than a read-then-write, so two drivers claiming the same
+   * order at the same moment can't both succeed.
+   */
+  async claimOrder(orderId: number, driverId: number) {
+    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.status !== 'preparing') {
+      throw new ForbiddenException('Order is not ready for driver pickup');
+    }
+
+    const result = await this.prisma.order.updateMany({
+      where: { id: orderId, driverId: null },
+      data: { driverId, status: 'driver_assigned', statusManual: true, driverAssignedAt: new Date() },
+    });
+    if (result.count === 0) {
+      throw new ForbiddenException('This order was already claimed by another driver');
+    }
+
+    const updated = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { restaurant: { select: { name: true } }, user: { select: { fullName: true, phone: true } } },
+    });
+    if (!updated) throw new NotFoundException('Order not found');
+
+    this.ws.broadcastOrderUpdate(updated);
+
+    return {
+      ...updated,
+      subtotal: updated.subtotal.toString(),
+      restaurantName: updated.restaurant?.name ?? null,
+      customerName: updated.user?.fullName ?? null,
+      customerPhone: updated.user?.phone ?? null,
+      restaurant: undefined,
+      user: undefined,
+    };
+  }
+
   /** Returns orders in driver_assigned or on_the_way that belong to this driver. */
   async getDriverOrders(userId: number) {
     const rows = await this.prisma.order.findMany({
@@ -71,7 +126,7 @@ export class CourierService {
       },
     });
 
-    this.ws.broadcast({ type: 'order_update', order: { ...updated, subtotal: updated.subtotal.toString() } });
+    this.ws.broadcastOrderUpdate(updated);
 
     return {
       ...updated,

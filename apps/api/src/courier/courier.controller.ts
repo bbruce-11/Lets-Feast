@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { CourierService } from './courier.service';
@@ -18,6 +19,20 @@ import { CurrentUser, type JwtPayload } from '../common/decorators/current-user.
 @Roles('driver', 'admin')
 export class CourierController {
   constructor(private readonly courierService: CourierService) {}
+
+  /** GET /courier/orders/available — unclaimed orders ready for pickup. */
+  @Get('orders/available')
+  getAvailableOrders() {
+    return this.courierService.getAvailableOrders();
+  }
+
+  /** POST /courier/orders/:id/claim — claim an unassigned order. */
+  @Post('orders/:id/claim')
+  claimOrder(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    const orderId = parseInt(id, 10);
+    if (Number.isNaN(orderId)) throw new BadRequestException('Invalid order id');
+    return this.courierService.claimOrder(orderId, user.userId);
+  }
 
   /** GET /courier/orders — orders assigned to the requesting driver. */
   @Get('orders')
