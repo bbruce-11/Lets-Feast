@@ -45,14 +45,14 @@ export interface CreateRestaurantInput {
 export const adminApi = {
   getRestaurants: () => request<Restaurant[]>('/restaurants'),
   createRestaurant: (input: CreateRestaurantInput) =>
-    request<Restaurant>('/restaurants', { method: 'POST', body: JSON.stringify(input) }),
+    request<Restaurant>('/admin/restaurants', { method: 'POST', body: JSON.stringify(input) }),
   addMenuItems: (restaurantId: string, items: CreateMenuItemInput[]) =>
-    request(`/restaurants/${restaurantId}/menu-items`, {
+    request(`/admin/restaurants/${restaurantId}/menu-items`, {
       method: 'POST',
       body: JSON.stringify({ items }),
     }),
   setCommissionRate: (restaurantId: string, commissionRatePercent: number) =>
-    request(`/restaurants/${restaurantId}/commission-rate`, {
+    request(`/admin/restaurants/${restaurantId}/commission-rate`, {
       method: 'PATCH',
       body: JSON.stringify({ commissionRatePercent }),
     }),
