@@ -18,6 +18,7 @@ export async function loginAction(
     });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as Record<string, string>;
+      console.error(`[loginAction] signin failed: status=${res.status} body=${JSON.stringify(body)} apiUrl=${API_URL}`);
       return { error: body.message ?? 'Invalid credentials' };
     }
     const { token } = (await res.json()) as { token: string };
@@ -28,7 +29,8 @@ export async function loginAction(
       path: '/',
       maxAge: 60 * 60 * 8,
     });
-  } catch {
+  } catch (err) {
+    console.error(`[loginAction] fetch threw: ${err instanceof Error ? err.stack : String(err)} apiUrl=${API_URL}`);
     return { error: 'Unable to connect to the server. Please try again.' };
   }
   redirect('/');
