@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { adminApi } from "@/lib/api";
 import type { Restaurant, MenuItem } from "@/lib/api";
-import { ArrowLeft, Plus, Trash2, Loader2, Store, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Loader2, Store, UtensilsCrossed, Pencil, X, Check } from "lucide-react";
 
 interface MenuItemDraft {
   category: string;
@@ -33,6 +33,72 @@ export default function RestaurantDetailPage({
   const [newItems, setNewItems] = useState<MenuItemDraft[]>([emptyMenuItem()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<MenuItemDraft>(emptyMenuItem());
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
+
+  function startEdit(item: MenuItem) {
+    setEditingId(item.id);
+    setEditError(null);
+    setRowError(null);
+    setEditDraft({
+      category: item.category,
+      name: item.name,
+      description: item.description,
+      price: String(item.price),
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditError(null);
+  }
+
+  async function saveEdit(itemId: string) {
+    setEditError(null);
+    if (!editDraft.category.trim() || !editDraft.name.trim()) {
+      setEditError("Category and name are required.");
+      return;
+    }
+    const price = Number(editDraft.price);
+    if (!Number.isFinite(price) || price < 0) {
+      setEditError("Enter a valid price.");
+      return;
+    }
+    setIsSavingEdit(true);
+    try {
+      await adminApi.updateMenuItem(id, itemId, {
+        category: editDraft.category.trim(),
+        name: editDraft.name.trim(),
+        description: editDraft.description.trim(),
+        price,
+      });
+      setEditingId(null);
+      await load();
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Failed to save changes");
+    } finally {
+      setIsSavingEdit(false);
+    }
+  }
+
+  async function handleDelete(itemId: string) {
+    if (!confirm("Remove this item from the menu?")) return;
+    setRowError(null);
+    setDeletingId(itemId);
+    try {
+      await adminApi.deleteMenuItem(id, itemId);
+      await load();
+    } catch (err) {
+      setRowError(err instanceof Error ? err.message : "Failed to delete item");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -155,6 +221,11 @@ export default function RestaurantDetailPage({
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Current menu
               </h2>
+              {rowError && (
+                <div className="bg-destructive/10 text-destructive p-4 rounded-lg border border-destructive/20 text-sm">
+                  {rowError}
+                </div>
+              )}
               {existingItems.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
                   <UtensilsCrossed className="w-5 h-5" />
@@ -168,22 +239,121 @@ export default function RestaurantDetailPage({
                         {category}
                       </h3>
                       <div className="flex flex-col gap-2">
-                        {items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="rounded-lg border border-border bg-card px-4 py-3 flex items-start justify-between gap-4"
-                          >
-                            <div className="min-w-0">
-                              <p className="font-medium text-sm text-foreground">{item.name}</p>
-                              {item.description && (
-                                <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                        {items.map((item) =>
+                          editingId === item.id ? (
+                            <div
+                              key={item.id}
+                              className="rounded-lg border border-primary/40 bg-card p-4 flex flex-col gap-3"
+                            >
+                              <div className="grid grid-cols-2 gap-3">
+                                <input
+                                  value={editDraft.category}
+                                  onChange={(e) =>
+                                    setEditDraft((d) => ({ ...d, category: e.target.value }))
+                                  }
+                                  className="input"
+                                  placeholder="Category"
+                                />
+                                <input
+                                  value={editDraft.name}
+                                  onChange={(e) => setEditDraft((d) => ({ ...d, name: e.target.value }))}
+                                  className="input"
+                                  placeholder="Item name"
+                                />
+                              </div>
+                              <input
+                                value={editDraft.description}
+                                onChange={(e) =>
+                                  setEditDraft((d) => ({ ...d, description: e.target.value }))
+                                }
+                                className="input"
+                                placeholder="Description (optional)"
+                              />
+                              <div className="flex items-center gap-3">
+                                <div className="relative w-28">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                                    $
+                                  </span>
+                                  <input
+                                    value={editDraft.price}
+                                    onChange={(e) =>
+                                      setEditDraft((d) => ({ ...d, price: e.target.value }))
+                                    }
+                                    className="input pl-6"
+                                    inputMode="decimal"
+                                  />
+                                </div>
+                                <div className="ml-auto flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    disabled={isSavingEdit}
+                                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors disabled:opacity-50"
+                                    aria-label="Cancel"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => saveEdit(item.id)}
+                                    disabled={isSavingEdit}
+                                    className="h-9 w-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50"
+                                    aria-label="Save"
+                                  >
+                                    {isSavingEdit ? (
+                                      <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                      <Check className="w-4 h-4" />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                              {editError && (
+                                <p className="text-xs text-destructive">{editError}</p>
                               )}
                             </div>
-                            <span className="text-sm font-mono text-foreground shrink-0">
-                              ${Number(item.price).toFixed(2)}
-                            </span>
-                          </div>
-                        ))}
+                          ) : (
+                            <div
+                              key={item.id}
+                              className="group rounded-lg border border-border bg-card px-4 py-3 flex items-start justify-between gap-4"
+                            >
+                              <div className="min-w-0">
+                                <p className="font-medium text-sm text-foreground">{item.name}</p>
+                                {item.description && (
+                                  <p className="text-xs text-muted-foreground mt-0.5">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <span className="text-sm font-mono text-foreground mr-2">
+                                  ${Number(item.price).toFixed(2)}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(item)}
+                                  className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+                                  aria-label="Edit item"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(item.id)}
+                                  disabled={deletingId === item.id}
+                                  className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center transition-colors disabled:opacity-50"
+                                  aria-label="Delete item"
+                                >
+                                  {deletingId === item.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
                   ))}

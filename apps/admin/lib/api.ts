@@ -67,4 +67,17 @@ export const adminApi = {
       method: 'PATCH',
       body: JSON.stringify({ commissionRatePercent }),
     }),
+  updateMenuItem: (
+    restaurantId: string,
+    menuItemId: string,
+    input: Partial<{ category: string; name: string; description: string; price: number }>,
+  ) =>
+    request<MenuItem>(`/admin/restaurants/${restaurantId}/menu-items/${menuItemId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    }),
+  deleteMenuItem: (restaurantId: string, menuItemId: string) =>
+    request<{ deleted: boolean }>(`/admin/restaurants/${restaurantId}/menu-items/${menuItemId}`, {
+      method: 'DELETE',
+    }),
 };

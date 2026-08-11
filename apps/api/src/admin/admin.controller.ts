@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { PrismaService } from '../prisma/prisma.service';
-import { AdminService, CreateMenuItemInput, CreateRestaurantInput } from './admin.service';
+import { AdminService, CreateMenuItemInput, CreateRestaurantInput, UpdateMenuItemInput } from './admin.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,6 +33,20 @@ export class AdminController {
   @Post('restaurants/:id/menu-items')
   addMenuItems(@Param('id') id: string, @Body() body: { items: CreateMenuItemInput[] }) {
     return this.adminService.addMenuItems(id, body.items ?? []);
+  }
+
+  @Patch('restaurants/:id/menu-items/:menuItemId')
+  updateMenuItem(
+    @Param('id') id: string,
+    @Param('menuItemId') menuItemId: string,
+    @Body() body: UpdateMenuItemInput,
+  ) {
+    return this.adminService.updateMenuItem(id, menuItemId, body);
+  }
+
+  @Delete('restaurants/:id/menu-items/:menuItemId')
+  deleteMenuItem(@Param('id') id: string, @Param('menuItemId') menuItemId: string) {
+    return this.adminService.deleteMenuItem(id, menuItemId);
   }
 
   @Patch('restaurants/:id/commission-rate')

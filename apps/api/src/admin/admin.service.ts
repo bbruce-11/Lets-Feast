@@ -20,6 +20,13 @@ export interface CreateMenuItemInput {
   dietaryTags?: string[];
 }
 
+export interface UpdateMenuItemInput {
+  category?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+}
+
 export interface CreateRestaurantInput {
   name: string;
   cuisine: string;
@@ -114,6 +121,44 @@ export class AdminService {
       })),
     });
     return this.prisma.menuItem.findMany({ where: { restaurantId }, orderBy: [{ category: 'asc' }, { name: 'asc' }] });
+  }
+
+  async updateMenuItem(restaurantId: string, menuItemId: string, input: UpdateMenuItemInput) {
+    const existing = await this.prisma.menuItem.findUnique({ where: { id: menuItemId } });
+    if (!existing || existing.restaurantId !== restaurantId) {
+      throw new BadRequestException('Menu item not found for this restaurant');
+    }
+    if (input.price != null && (!Number.isFinite(input.price) || input.price < 0)) {
+      throw new BadRequestException('Price must be a non-negative number');
+    }
+
+    return this.prisma.menuItem.update({
+      where: { id: menuItemId },
+      data: {
+        ...(input.category != null && { category: input.category }),
+        ...(input.name != null && { name: input.name }),
+        ...(input.description != null && { description: input.description }),
+        ...(input.price != null && { price: input.price.toFixed(2) }),
+      },
+    });
+  }
+
+  async deleteMenuItem(restaurantId: string, menuItemId: string) {
+    const existing = await this.prisma.menuItem.findUnique({ where: { id: menuItemId } });
+    if (!existing || existing.restaurantId !== restaurantId) {
+      throw new BadRequestException('Menu item not found for this restaurant');
+    }
+    try {
+      await this.prisma.menuItem.delete({ where: { id: menuItemId } });
+    } catch {
+      // Foreign key constraint - this item appears on at least one past order.
+      // Order history keeps a frozen copy of name/price, so the order itself
+      // is unaffected either way; we just can't remove the row it points to.
+      throw new BadRequestException(
+        'This item has already been ordered at least once and can\'t be deleted. Edit it instead, or ask engineering about archiving items.',
+      );
+    }
+    return { deleted: true };
   }
 
   async setCommissionRate(restaurantId: string, commissionRatePercent: number) {
