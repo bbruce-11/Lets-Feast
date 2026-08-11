@@ -15,6 +15,15 @@ export interface Restaurant {
   isOpen: boolean;
 }
 
+export interface MenuItem {
+  id: string;
+  restaurantId: string;
+  category: string;
+  name: string;
+  description: string;
+  price: string;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
     ...init,
@@ -44,6 +53,8 @@ export interface CreateRestaurantInput {
 
 export const adminApi = {
   getRestaurants: () => request<Restaurant[]>('/restaurants'),
+  getRestaurant: (restaurantId: string) => request<Restaurant>(`/restaurants/${restaurantId}`),
+  getMenu: (restaurantId: string) => request<MenuItem[]>(`/restaurants/${restaurantId}/menu`),
   createRestaurant: (input: CreateRestaurantInput) =>
     request<Restaurant>('/admin/restaurants', { method: 'POST', body: JSON.stringify(input) }),
   addMenuItems: (restaurantId: string, items: CreateMenuItemInput[]) =>

@@ -97,7 +97,13 @@ function AdminDashboard() {
             {restaurants.map((r) => (
               <div
                 key={r.id}
-                className="rounded-xl border border-border bg-card p-5 flex flex-col gap-3 hover:border-primary/30 transition-colors"
+                onClick={() => router.push(`/restaurants/${r.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") router.push(`/restaurants/${r.id}`);
+                }}
+                className="rounded-xl border border-border bg-card p-5 flex flex-col gap-3 hover:border-primary/30 transition-colors cursor-pointer"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
