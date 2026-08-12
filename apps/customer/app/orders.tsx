@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { getMyOrders, rateOrder, type ApiOrder } from '@/lib/api';
@@ -17,6 +18,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default function OrderHistoryScreen() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { data: orders, isLoading } = useQuery({ queryKey: ['orders', 'me'], queryFn: getMyOrders });
 
   const sorted = [...(orders ?? [])].sort(
@@ -25,8 +27,8 @@ export default function OrderHistoryScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={8}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="chevron-back" size={22} color={colors.navy} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.navy }]}>Your Orders</Text>
