@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useCart } from '@/context/CartContext';
@@ -18,6 +19,7 @@ import {
 export default function RestaurantDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useColors();
+  const insets = useSafeAreaInsets();
 
   const { data: restaurant, isLoading: loadingRestaurant } = useQuery({
     queryKey: ['restaurant', id],
@@ -69,7 +71,11 @@ export default function RestaurantDetailScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={() => router.back()}
+        style={[styles.backButton, { paddingTop: insets.top + 12 }]}
+        hitSlop={12}
+      >
         <Ionicons name="chevron-back" size={20} color={colors.navy} />
         <Text style={{ color: colors.navy, fontWeight: '600' }}>Back</Text>
       </TouchableOpacity>
