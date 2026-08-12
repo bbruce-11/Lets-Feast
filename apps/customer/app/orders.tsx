@@ -29,9 +29,9 @@ export default function OrderHistoryScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="chevron-back" size={22} color={colors.navy} />
+          <Ionicons name="chevron-back" size={22} color={colors.foreground} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.navy }]}>Your Orders</Text>
+        <Text style={[styles.title, { color: colors.foreground }]}>Your Orders</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -75,7 +75,7 @@ function OrderRow({ order }: { order: ApiOrder }) {
   return (
     <TouchableOpacity
       onPress={() => router.push({ pathname: '/order/[id]', params: { id: String(order.id) } })}
-      style={[styles.row, { borderColor: colors.border, backgroundColor: colors.card }]}
+      style={[styles.row, { backgroundColor: colors.card }]}
       activeOpacity={0.8}
     >
       <View style={styles.rowHeader}>
@@ -143,14 +143,23 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
   },
-  title: { fontSize: 18, fontWeight: '700' },
+  title: { fontSize: 20, fontFamily: 'Inter_700Bold' },
   list: { paddingHorizontal: 16, paddingBottom: 24, gap: 10 },
-  empty: { textAlign: 'center', marginTop: 60 },
-  row: { borderWidth: 1, borderRadius: 14, padding: 14, gap: 8 },
+  empty: { textAlign: 'center', marginTop: 60, fontFamily: 'Inter_400Regular' },
+  row: {
+    borderRadius: 16,
+    padding: 14,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
   rowHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  rowName: { fontSize: 15, fontWeight: '700', flex: 1, marginRight: 8 },
+  rowName: { fontSize: 15, fontFamily: 'Inter_700Bold', flex: 1, marginRight: 8 },
   rowMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  statusBadge: { fontSize: 11, fontWeight: '700', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
+  statusBadge: { fontSize: 11, fontFamily: 'Inter_700Bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
   ratingRow: { marginTop: 2 },
   stars: { flexDirection: 'row', alignItems: 'center', gap: 2 },
 });

@@ -42,7 +42,7 @@ export default function SignUpScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
     >
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.navy }]}>Create account</Text>
+        <Text style={[styles.title, { color: colors.foreground }]}>Create account</Text>
 
         <TextInput
           value={fullName}
@@ -74,19 +74,21 @@ export default function SignUpScreen() {
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isSubmitting || !fullName || !email || !password}
+          activeOpacity={0.85}
           style={[styles.button, { backgroundColor: colors.primary, opacity: isSubmitting ? 0.7 : 1 }]}
         >
           {isSubmitting ? (
             <ActivityIndicator color={colors.primaryForeground} />
           ) : (
-            <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>Create Account</Text>
+            <Text style={styles.buttonText}>Create Account</Text>
           )}
         </TouchableOpacity>
 
         <Link href="/signin" asChild>
           <TouchableOpacity style={styles.link}>
-            <Text style={{ color: colors.mutedForeground }}>
-              Already have an account? <Text style={{ color: colors.primary, fontWeight: '600' }}>Sign in</Text>
+            <Text style={{ color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }}>
+              Already have an account?{' '}
+              <Text style={{ color: colors.primary, fontFamily: 'Inter_600SemiBold' }}>Sign in</Text>
             </Text>
           </TouchableOpacity>
         </Link>
@@ -98,10 +100,10 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { flex: 1, justifyContent: 'center', paddingHorizontal: 24, gap: 12 },
-  title: { fontSize: 28, fontWeight: '700', textAlign: 'center', marginBottom: 24 },
-  input: { height: 52, borderRadius: 14, paddingHorizontal: 16, fontSize: 16 },
+  title: { fontSize: 26, fontFamily: 'Inter_700Bold', textAlign: 'center', marginBottom: 24 },
+  input: { height: 52, borderRadius: 14, paddingHorizontal: 16, fontSize: 16, fontFamily: 'Inter_400Regular' },
   button: { height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
-  buttonText: { fontSize: 16, fontWeight: '700' },
-  error: { textAlign: 'center', fontSize: 14 },
+  buttonText: { fontSize: 16, fontFamily: 'Inter_700Bold', color: '#fff' },
+  error: { textAlign: 'center', fontSize: 14, fontFamily: 'Inter_500Medium' },
   link: { marginTop: 20, alignItems: 'center' },
 });

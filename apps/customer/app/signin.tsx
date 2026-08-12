@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, router } from 'expo-router';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -41,7 +42,8 @@ export default function SignInScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
     >
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.navy }]}>Let's Feast</Text>
+        <Image source={require('@/assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+        <Text style={[styles.title, { color: colors.foreground }]}>Let's Feast</Text>
         <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>Sign in to order</Text>
 
         <TextInput
@@ -67,19 +69,21 @@ export default function SignInScreen() {
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isSubmitting || !email || !password}
+          activeOpacity={0.85}
           style={[styles.button, { backgroundColor: colors.primary, opacity: isSubmitting ? 0.7 : 1 }]}
         >
           {isSubmitting ? (
             <ActivityIndicator color={colors.primaryForeground} />
           ) : (
-            <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>Sign In</Text>
+            <Text style={styles.buttonText}>Sign In</Text>
           )}
         </TouchableOpacity>
 
         <Link href="/signup" asChild>
           <TouchableOpacity style={styles.link}>
-            <Text style={{ color: colors.mutedForeground }}>
-              New here? <Text style={{ color: colors.primary, fontWeight: '600' }}>Create an account</Text>
+            <Text style={{ color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }}>
+              New here?{' '}
+              <Text style={{ color: colors.primary, fontFamily: 'Inter_600SemiBold' }}>Create an account</Text>
             </Text>
           </TouchableOpacity>
         </Link>
@@ -91,11 +95,12 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { flex: 1, justifyContent: 'center', paddingHorizontal: 24, gap: 12 },
-  title: { fontSize: 32, fontWeight: '700', textAlign: 'center' },
-  subtitle: { fontSize: 15, textAlign: 'center', marginBottom: 24 },
-  input: { height: 52, borderRadius: 14, paddingHorizontal: 16, fontSize: 16 },
+  logo: { width: 56, height: 52, alignSelf: 'center', marginBottom: 4 },
+  title: { fontSize: 30, fontFamily: 'Inter_700Bold', textAlign: 'center' },
+  subtitle: { fontSize: 15, fontFamily: 'Inter_400Regular', textAlign: 'center', marginBottom: 20 },
+  input: { height: 52, borderRadius: 14, paddingHorizontal: 16, fontSize: 16, fontFamily: 'Inter_400Regular' },
   button: { height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
-  buttonText: { fontSize: 16, fontWeight: '700' },
-  error: { textAlign: 'center', fontSize: 14 },
+  buttonText: { fontSize: 16, fontFamily: 'Inter_700Bold', color: '#fff' },
+  error: { textAlign: 'center', fontSize: 14, fontFamily: 'Inter_500Medium' },
   link: { marginTop: 20, alignItems: 'center' },
 });
