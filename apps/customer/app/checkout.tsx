@@ -97,16 +97,17 @@ export default function CheckoutScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.navy }]}>Checkout</Text>
+      <Text style={[styles.title, { color: colors.foreground }]}>Checkout</Text>
       <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>{restaurantName}</Text>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.card, { backgroundColor: colors.card }]}>
         <Text style={[styles.sectionLabel, { color: colors.foreground }]}>Delivery method</Text>
         <View style={styles.toggleRow}>
           {(['delivery', 'pickup'] as const).map((type) => (
             <TouchableOpacity
               key={type}
               onPress={() => setDeliveryType(type)}
+              activeOpacity={0.85}
               style={[
                 styles.toggleButton,
                 {
@@ -118,7 +119,7 @@ export default function CheckoutScreen() {
               <Text
                 style={{
                   color: deliveryType === type ? colors.primaryForeground : colors.foreground,
-                  fontWeight: '600',
+                  fontFamily: 'Inter_600SemiBold',
                   textTransform: 'capitalize',
                 }}
               >
@@ -130,7 +131,7 @@ export default function CheckoutScreen() {
       </View>
 
       {deliveryType === 'delivery' && (
-        <View style={styles.section}>
+        <View style={[styles.section, styles.card, { backgroundColor: colors.card }]}>
           <Text style={[styles.sectionLabel, { color: colors.foreground }]}>Delivery address</Text>
           <AddressPicker
             value={selectedAddress?.displayName ?? ''}
@@ -140,10 +141,10 @@ export default function CheckoutScreen() {
       )}
 
       {deliveryType === 'delivery' && (
-        <View style={styles.section}>
+        <View style={[styles.section, styles.card, { backgroundColor: colors.card }]}>
           <Text style={[styles.sectionLabel, { color: colors.foreground }]}>
             Courier tip{' '}
-            <Text style={{ fontWeight: '400', color: colors.mutedForeground }}>
+            <Text style={{ fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
               (100% goes to your courier)
             </Text>
           </Text>
@@ -152,6 +153,7 @@ export default function CheckoutScreen() {
               <TouchableOpacity
                 key={preset}
                 onPress={() => setTipCents(preset)}
+                activeOpacity={0.85}
                 style={[
                   styles.tipButton,
                   {
@@ -163,7 +165,7 @@ export default function CheckoutScreen() {
                 <Text
                   style={{
                     color: tipCents === preset ? colors.primaryForeground : colors.foreground,
-                    fontWeight: '600',
+                    fontFamily: 'Inter_600SemiBold',
                   }}
                 >
                   {preset === 0 ? 'No tip' : `$${(preset / 100).toFixed(0)}`}
@@ -174,7 +176,7 @@ export default function CheckoutScreen() {
         </View>
       )}
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.card, { backgroundColor: colors.card }]}>
         <Text style={[styles.sectionLabel, { color: colors.foreground }]}>Card details</Text>
         <CardField
           postalCodeEnabled
@@ -184,21 +186,25 @@ export default function CheckoutScreen() {
         />
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.totalRow}>
-          <Text style={{ color: colors.mutedForeground }}>Subtotal</Text>
-          <Text style={{ color: colors.foreground }}>${(subtotalCents / 100).toFixed(2)}</Text>
+          <Text style={{ color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }}>Subtotal</Text>
+          <Text style={{ color: colors.foreground, fontFamily: 'Inter_500Medium' }}>
+            ${(subtotalCents / 100).toFixed(2)}
+          </Text>
         </View>
         {deliveryType === 'delivery' && (
           <View style={styles.totalRow}>
-            <Text style={{ color: colors.mutedForeground }}>Tip</Text>
-            <Text style={{ color: colors.foreground }}>${(effectiveTip / 100).toFixed(2)}</Text>
+            <Text style={{ color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }}>Tip</Text>
+            <Text style={{ color: colors.foreground, fontFamily: 'Inter_500Medium' }}>
+              ${(effectiveTip / 100).toFixed(2)}
+            </Text>
           </View>
         )}
         {feastWindow && (
           <View style={styles.totalRow}>
-            <Text style={{ color: colors.accent }}>Feast Window discount</Text>
-            <Text style={{ color: colors.accent, fontWeight: '600' }}>
+            <Text style={{ color: colors.accent, fontFamily: 'Inter_400Regular' }}>Feast Window discount</Text>
+            <Text style={{ color: colors.accent, fontFamily: 'Inter_700Bold' }}>
               -${Number.parseFloat(feastWindow.discount).toFixed(2)}
             </Text>
           </View>
@@ -213,12 +219,13 @@ export default function CheckoutScreen() {
       <TouchableOpacity
         onPress={handlePlaceOrder}
         disabled={!canSubmit}
+        activeOpacity={0.85}
         style={[styles.submitButton, { backgroundColor: colors.primary, opacity: canSubmit ? 1 : 0.5 }]}
       >
         {isPlacing ? (
           <ActivityIndicator color={colors.primaryForeground} />
         ) : (
-          <Text style={{ color: colors.primaryForeground, fontSize: 16, fontWeight: '700' }}>
+          <Text style={{ color: colors.primaryForeground, fontSize: 16, fontFamily: 'Inter_700Bold' }}>
             Place Order
           </Text>
         )}
@@ -229,10 +236,19 @@ export default function CheckoutScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  title: { fontSize: 24, fontWeight: '700', marginTop: 16 },
-  subtitle: { fontSize: 14, marginTop: 4, marginBottom: 8 },
-  section: { marginTop: 20 },
-  sectionLabel: { fontSize: 14, fontWeight: '600', marginBottom: 10 },
+  title: { fontSize: 24, fontFamily: 'Inter_700Bold', marginTop: 16 },
+  subtitle: { fontSize: 14, marginTop: 4, marginBottom: 8, fontFamily: 'Inter_500Medium' },
+  section: { marginTop: 16 },
+  card: {
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  sectionLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold', marginBottom: 10 },
   toggleRow: { flexDirection: 'row', gap: 10 },
   toggleButton: {
     flex: 1,
@@ -252,11 +268,11 @@ const styles = StyleSheet.create({
   },
   cardField: { width: '100%', height: 50 },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  feeNote: { fontSize: 12, marginTop: 6 },
-  error: { textAlign: 'center', marginTop: 16 },
+  feeNote: { fontSize: 12, marginTop: 6, fontFamily: 'Inter_400Regular' },
+  error: { textAlign: 'center', marginTop: 16, fontFamily: 'Inter_500Medium' },
   submitButton: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
